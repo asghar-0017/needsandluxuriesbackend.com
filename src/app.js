@@ -15,21 +15,22 @@ app.use(express.json());
   });
 
 const start = ()=>{
-    // ConnectDB()
-    // .then(() => {
-    //   app.listen(3000, (req, res) => {
-    //     console.log("server is running on port 3000");
-    //   });
-    //   console.log("DB connected");
-    // })
-    // .catch((err) => {
-    //   console.log(err);
-    // });
+    ConnectDB()
+    .then(() => {
+      app.listen(3000, (req, res) => {
+        console.log("server is running on port 3000");
+      });
+      console.log("DB connected");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
 
-    app.listen(3000, (req, res) => {
-            console.log("server is running on port 3000");
-          });
-        }
+    // app.listen(3000, (req, res) => {
+    //         console.log("server is running on port 3000");
+    //       });
+    //     }
   
 
 module.exports= {start}
