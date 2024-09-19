@@ -1,3 +1,3 @@
-const start = require("./src/app.js")
+const {start} = require("./src/app.js")
 
 start()

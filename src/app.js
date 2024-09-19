@@ -4,7 +4,15 @@ const Routes = require("./routes/ReviewRoute.js");
 const ReviewRoute = require("./routes/clientroute.js");
 const app = express();
 
-
+app.use(express.json());
+  app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-encoded data
+  
+  Routes(app);
+  ReviewRoute(app);
+  
+  app.get("/", (req, res) => {
+    res.send("hello world");
+  });
 
 const start = ()=>{
     ConnectDB()
@@ -17,14 +25,6 @@ const start = ()=>{
     .catch((err) => {
       console.log(err);
     });
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-encoded data
   
-  Routes(app);
-  ReviewRoute(app);
-  
-  app.get("/", (req, res) => {
-    res.send("hello world");
-  });
 }
-module.exports=start
+module.exports= {start}
