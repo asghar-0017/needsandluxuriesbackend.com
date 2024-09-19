@@ -7,24 +7,29 @@ const app = express();
 app.use(express.json());
   app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-encoded data
   
-  Routes(app);
-  ReviewRoute(app);
+//   Routes(app);
+//   ReviewRoute(app);
   
   app.get("/", (req, res) => {
     res.send("hello world");
   });
 
 const start = ()=>{
-    ConnectDB()
-    .then(() => {
-      app.listen(3000, (req, res) => {
-        console.log("server is running on port 3000");
-      });
-      console.log("DB connected");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    // ConnectDB()
+    // .then(() => {
+    //   app.listen(3000, (req, res) => {
+    //     console.log("server is running on port 3000");
+    //   });
+    //   console.log("DB connected");
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    // });
+
+    app.listen(3000, (req, res) => {
+            console.log("server is running on port 3000");
+          });
+        }
   
-}
+
 module.exports= {start}
