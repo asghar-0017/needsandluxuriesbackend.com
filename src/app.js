@@ -16,19 +16,19 @@ app.use(express.json());
     res.send("hello world");
   });
 
-const start = ()=>{
+  const start = () => {
     ConnectDB()
-    .then(() => {
-      app.listen(3000, (req, res) => {
-        console.log("server is running on port 3000");
+      .then(() => {
+        app.listen({port:3000,host:'0.0.0.0'}, () => {
+          console.log("Server is running on port 3000");
+        });
+        console.log("DB connected");
+      })
+      .catch((err) => {
+        console.log(err);
       });
-      console.log("DB connected");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}
-
+  }
+  
   
 
 module.exports= {start}
