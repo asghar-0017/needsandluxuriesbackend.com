@@ -4,7 +4,12 @@ const Routes = require("./routes/ReviewRoute.js");
 const ReviewRoute = require("./routes/clientroute.js");
 const ProductRoute = require("./routes/ProductRoute.js")
 const app = express();
+const cors = require("cors")
 
+
+app.use(cors({
+  origin: "*",
+}))
 app.use(express.json());
   app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-encoded data
   
