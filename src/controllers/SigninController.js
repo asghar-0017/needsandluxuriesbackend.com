@@ -1,5 +1,6 @@
 const ClientSignin = require("../services/clientServices.js");
-
+const SigninModel = require("../model/SigninModel.js")
+const { generateToken, sendEmail } = require("../services/clientServices.js");
 const createclient = async (req, res) => {
   try {
     const user = req.body;
@@ -14,7 +15,8 @@ const createclient = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const user = await ClientModel.findOne(
+    
+    const user = await SigninModel.find(
       { email: req.body.email },
       { password: req.body.password }
     );
