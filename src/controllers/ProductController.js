@@ -18,10 +18,16 @@ const CreateProduct = async (req, res) => {
 
     data.Imageurl = result.secure_url;
 
-    const { price, Quantity } = data;
+    const { price,sale,discountprice } = data;
 
-    const totalPrice = parseFloat(price) * parseInt(Quantity);
-    data.price = totalPrice.toString();
+    if (sale === 'true' && discountprice) {
+        const discount = parseFloat(discountprice) / 100; // Convert discount percentage to decimal
+        const newPrice = price - (price * discount); // Calculate new price after applying discount
+        data.price = newPrice;
+      }
+
+    // const totalPrice = parseFloat(price) * parseInt(Quantity);
+    // data.price = totalPrice.toString();
 
     console.log("Final Product Data:", data);
 

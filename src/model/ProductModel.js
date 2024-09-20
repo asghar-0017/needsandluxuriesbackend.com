@@ -5,7 +5,7 @@ const ProductSchema = new mongoose.Schema({
     type:String
   },
   price:{
-    type:String
+    type:Number
   },
   review:{
     type:String
@@ -18,6 +18,12 @@ const ProductSchema = new mongoose.Schema({
   },
   Quantity:{
     type:String
+  },
+  discountprice:{
+    type:Number
+  },
+  sale:{
+    type:Boolean
   }
 })
 
