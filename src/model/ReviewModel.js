@@ -16,6 +16,9 @@ reviewTitle:{
 reviewMessage:{
     type:String
 },
+productId:{
+    type:String
+},
 })
 
 module.exports = ReviewModel = mongoose.model("Review",ReviewSchema)

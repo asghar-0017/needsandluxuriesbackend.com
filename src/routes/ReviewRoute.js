@@ -3,7 +3,7 @@ const {
   ShowReview,
 } = require("../controllers/ReviewController.js");
 const Routes = (app) => {
-  app.post("/create-review", CreateReview);
+  app.post("/create-review/:id", CreateReview);
   app.get("/get-reviews", ShowReview);
 };
 

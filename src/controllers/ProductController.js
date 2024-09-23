@@ -21,8 +21,8 @@ const CreateProduct = async (req, res) => {
     const { price,sale,discountprice } = data;
 
     if (sale === 'true' && discountprice) {
-        const discount = parseFloat(discountprice) / 100; // Convert discount percentage to decimal
-        const newPrice = price - (price * discount); // Calculate new price after applying discount
+        const discount = parseFloat(discountprice) / 100; 
+        const newPrice = price - (price * discount); 
         data.price = newPrice;
       }
 
