@@ -23,7 +23,7 @@ const CreateProduct = async (req, res) => {
     if (sale === 'true' && discountprice) {
         const discount = parseFloat(discountprice) / 100; 
         const newPrice = price - (price * discount); 
-        data.price = newPrice;
+        data.newprice = newPrice;
       }
 
     // const totalPrice = parseFloat(price) * parseInt(Quantity);

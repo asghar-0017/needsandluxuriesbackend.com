@@ -5,7 +5,6 @@ const CreateReview = async (req, res) => {
     const data = req.body;
     const productid = req.params.id;
 
- 
 
     data.productId = productid; // Assign product ID from the URL parameter
 
