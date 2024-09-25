@@ -54,6 +54,15 @@ catch(err){
 }
 
 }
+const GetOneFromCart = async(req,res)=>{
+  try{
+    const data = await AddtoCartModel.findById(req.params.id)
+    res.status(200).json({ message: "Product fetched successfully", data });
+    }
+    catch(err){
+      console.error("Error fetching Product:", err);
+    }
+}
 
 const DeleteFromCart = async(req,res)=>{
   try{
@@ -100,4 +109,4 @@ const UpdateCart = async (req, res) => {
   }
 };
   
-module.exports = { CreateCart,upload,GetFromCart, DeleteFromCart,UpdateCart };
+module.exports = { CreateCart,upload,GetFromCart, DeleteFromCart,UpdateCart,GetOneFromCart };

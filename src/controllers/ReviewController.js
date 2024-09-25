@@ -18,6 +18,21 @@ const CreateReview = async (req, res) => {
   }
 };
 
+const GetSingleReview = async (req, res) => {
+  try {
+    const data = await ReviewModel.findOne({ productId: req.params.id }); // Use findOne to fetch based on productId
+
+    if (!data) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    res.status(200).json({ message: "Review fetched successfully", data });
+  } catch (err) {
+    console.error("Error fetching review:", err);
+    res.status(500).json({ message: "Error fetching review", error: err.message });
+  }
+};
+
 
 const ShowReview = async (req, res) => {
   try {
@@ -31,4 +46,4 @@ const ShowReview = async (req, res) => {
   }
 };
 
-module.exports = { CreateReview, ShowReview };
+module.exports = { CreateReview, ShowReview, GetSingleReview };
