@@ -9,4 +9,4 @@ const Routes = (app) => {
   app.get("/get-reviews", ShowReview);
 };
 
-module.exports = Routes; // Export the Routes function directly, not as an object
+module.exports = Routes; 

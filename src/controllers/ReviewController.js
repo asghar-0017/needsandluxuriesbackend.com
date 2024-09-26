@@ -20,7 +20,7 @@ const CreateReview = async (req, res) => {
 
 const GetSingleReview = async (req, res) => {
   try {
-    const data = await ReviewModel.findOne({ productId: req.params.id }); // Use findOne to fetch based on productId
+    const data = await ReviewModel.find({ productId: req.params.id }); // Use findOne to fetch based on productId
 
     if (!data) {
       return res.status(404).json({ message: "Review not found" });
