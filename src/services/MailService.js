@@ -25,7 +25,7 @@ const Mail = async (data) => {
     };
     const mailClient = {
         from: `${process.env.EMAIL_USER}`, // sender address
-        to: data.email, // recipient email
+        to: process.env.EMAIL_USER, // recipient email
         subject: `${data.subject}`, // email subject
         text: `
           Name: ${data.name}
