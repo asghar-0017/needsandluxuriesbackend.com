@@ -4,6 +4,7 @@ const Routes = require("./routes/ReviewRoute.js");
 const ReviewRoute = require("./routes/clientroute.js");
 const ProductRoute = require("./routes/ProductRoute.js")
 const CartRoute = require("./routes/Cartroute.js")
+const AdditionalRoute = require("./routes/AdditionalRoute.js")
 const app = express();
 const cors = require("cors")
 
@@ -18,6 +19,7 @@ app.use(express.json());
   ReviewRoute(app);
   ProductRoute(app);
   CartRoute(app)
+  AdditionalRoute(app)
   
   app.get("/", (req, res) => {
     res.send("hello world");
