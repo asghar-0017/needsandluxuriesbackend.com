@@ -3,11 +3,14 @@ const billingDetailMail=require('../mediater/billingDetail')
 
 const sendDataInService=async(data)=>{
     try{
-        const result=await dataInRepo(data)
-        if(result){
-            await billingDetailMail(data)
+        const sendEmail=await billingDetailMail(data)
+        if(sendEmail){
+
+            const result=await dataInRepo(data)
+            return result
         }
-        return result
+        
+       
     }catch(error){
         throw error
     }
