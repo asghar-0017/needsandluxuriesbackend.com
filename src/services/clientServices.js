@@ -12,8 +12,8 @@ const sendEmail =async (usermail,code)=>{
         port: 587,
         secure: false, // or 'STARTTLS'
         auth: {
-            user: 'fa21bscs0006@maju.edu.pk',
-            pass: "lskm edsk xwkx opfc",
+            user: 'fa21bscs0017@maju.edu.pk',
+            pass: "eoeb amae fgaw adeu",
         }
     });
 

@@ -8,8 +8,8 @@ const billingDetailMail = async (data) => {
       port: 587,
       secure: false, 
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: 'fa21bscs0017@maju.edu.pk',
+        pass: 'eoeb amae fgaw adeu',
       },
     });
 
