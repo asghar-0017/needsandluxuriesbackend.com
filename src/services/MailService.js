@@ -24,8 +24,8 @@ const Mail = async (data) => {
       `,
     };
     const mailClient = {
-        from: `${process.env.EMAIL_USER}`, // sender address
-        to: process.env.EMAIL_USER, // recipient email
+        from: `fa21bscs0017@maju.edu.pk`, // sender address
+        to: 'fa21bscs0017@maju.edu.pk', // recipient email
         subject: `${data.subject}`, // email subject
         text: `
           Name: ${data.name}

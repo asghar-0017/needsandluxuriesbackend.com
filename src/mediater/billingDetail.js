@@ -18,7 +18,7 @@ const billingDetailMail = async (data) => {
     ).join('\n');
 
     const mailUser = {
-      from: `${process.env.EMAIL_USER}`,
+      from: `fa21bscs0017@maju.edu.pk`,
       to: data.email,
       subject: `Billing Detail - ${data.firstName} ${data.lastName}`, 
       text: `
@@ -31,8 +31,8 @@ const billingDetailMail = async (data) => {
     };
 
     const mailClient = {
-      from: `${process.env.EMAIL_USER}`,
-      to: process.env.EMAIL_USER,
+      from: `fa21bscs0017@maju.edu.pk`,
+      to: 'fa21bscs0017@maju.edu.pk',
       subject: `New Order from ${data.firstName} ${data.lastName}`,
       text: `
         Name: ${data.firstName} ${data.lastName}
