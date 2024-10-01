@@ -6,6 +6,7 @@ const ProductRoute = require("./routes/ProductRoute.js")
 const CartRoute = require("./routes/Cartroute.js")
 const AdditionalRoute = require("./routes/AdditionalRoute.js")
 const ContactRoute = require("./routes/ContactRoute.js")
+const billingRoute=require('./routes/billingRoute.js')
 const app = express();
 const cors = require("cors")
 
@@ -22,6 +23,7 @@ app.use(express.json());
   CartRoute(app)
   AdditionalRoute(app)
   ContactRoute(app)
+  billingRoute(app)
   
   app.get("/", (req, res) => {
     res.send("hello world");
