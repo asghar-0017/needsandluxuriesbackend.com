@@ -10,8 +10,6 @@ const CreateProduct = async (req, res) => {
       return res.status(400).json({ message: "Image is required" });
     }
 
-    console.log("File details:", req.file);
-
     const result = await cloudinary.uploader.upload(req.file.path);
     console.log("Cloudinary Upload Result:", result);
 
@@ -25,7 +23,6 @@ const CreateProduct = async (req, res) => {
       data.newprice = newPrice;
     }
 
-    console.log("Final Product Data:", data);
 
 
     const response = await ProductModel.create(data);
