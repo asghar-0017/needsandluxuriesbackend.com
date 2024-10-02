@@ -1,9 +1,9 @@
 const mongoose = require("mongoose")
+require('dotenv').config();
 
+const uri = process.env.MONGODB_URI; 
 const ConnectDB = async ()=>{
-  const uri = 'mongodb://mongo:mhhmHPGFAnmJebQVLhGurvdXbvGsAbHH@autorack.proxy.rlwy.net:28421';
 
-  // Connect to MongoDB using Mongoose (without deprecated options)
   mongoose.connect(uri,{
     useNewUrlParser: true, 
     useUnifiedTopology: true,

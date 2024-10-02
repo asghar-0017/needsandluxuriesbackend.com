@@ -1,4 +1,7 @@
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require('uuid'); // Importing UUID for random order ID generation
+
+
 
 const billingSchema = new mongoose.Schema({
   firstName: {
@@ -25,6 +28,13 @@ const billingSchema = new mongoose.Schema({
   additionalInformation: {
     type: String
   },
+  orderId:{
+    type: Number,
+  },
+  orderDate:{
+    type: Date,
+    default: Date.now 
+  },
   products: [
     {
       productId: {
@@ -36,7 +46,10 @@ const billingSchema = new mongoose.Schema({
       },
       price: {
         type: Number
-      }
+      },
+      Imageurl:{
+        type:String
+      },
     }
   ]
 });

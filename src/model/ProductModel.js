@@ -27,7 +27,11 @@ const ProductSchema = new mongoose.Schema({
   },
   newprice:{
     type:Number
-  }
+  },
+  category: {
+    type: String,
+  },
 })
+ProductSchema.statics.validCategories = ['Child', 'Men', 'Women'];
 
 module.exports = ProductModel = mongoose.model("Product",ProductSchema)
