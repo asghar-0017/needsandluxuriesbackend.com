@@ -6,5 +6,5 @@ const { CreateProduct, upload, GetProduct, GetOneProduct } = require("../control
     app.get("/get-product/:id",GetOneProduct);
   };
   
-  module.exports = Routes; // Export the Routes function directly, not as an object
+  module.exports = Routes;
   
