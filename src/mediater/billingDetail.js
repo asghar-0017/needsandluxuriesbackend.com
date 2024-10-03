@@ -18,7 +18,7 @@ const billingDetailMail = async (data) => {
     const productsInfo = data.products.map(product =>
       `<tr>
 
-        <td><img src="${product.Imageurl}" alt="${product.name}" style="width: 50px; height: auto;"/></td>
+        <td><img src="${product.Imageurl}" alt="${product.title}" style="width: 50px; height: auto;"/></td>
         <td>${product.name}</td>
         <td style="text-align:center;">${product.quantity}</td>
         <td style="text-align:right;">${(product.price).toFixed(2)}</td>

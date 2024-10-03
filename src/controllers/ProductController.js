@@ -1,5 +1,6 @@
 const ProductModel = require("../model/ProductModel.js");
 const { cloudinary, upload } = require("../services/ImageService.js");
+const productUpdatedData=require('../services/productService.js')
 
 
 const CreateProduct = async (req, res) => {
@@ -8,6 +9,10 @@ const CreateProduct = async (req, res) => {
     console.log("Data", data);
     if (!req.file) {
       return res.status(400).json({ message: "Image is required" });
+    }
+    
+    if (typeof data.materials === 'string') {
+      data.materials = data.materials.split(',').map((material) => material.trim());
     }
 
     const result = await cloudinary.uploader.upload(req.file.path);
@@ -52,5 +57,56 @@ const GetOneProduct = async (req, res) => {
     res.status(500).json({ message: "Error fetching product", error: error.message });
   }
 };
+const productUpdate = async (req, res) => {
+  try {
+    const id = req.params.id;
+    let updateData = { ...req.body };
 
-module.exports = { CreateProduct, upload, GetProduct, GetOneProduct };
+    console.log("Product ID:", id);
+    console.log("Update Data:", updateData);
+
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      updateData.Imageurl = result.secure_url;
+    }
+
+    const { price, sale, discountprice } = updateData;
+
+    if (sale === 'false') {
+      delete updateData.discountprice;
+      delete updateData.newprice;
+    } else if (sale === 'true' && discountprice) {
+      const discount = parseFloat(discountprice) / 100; // Convert percentage to decimal
+      const newPrice = price - (price * discount); // Calculate new discounted price
+      updateData.newprice = newPrice; // Add newprice to updateData
+    }
+
+    const result = await productUpdatedData(id, updateData);
+
+    if (result) {
+      res.status(200).json({ message: "Product updated successfully", result });
+    } else {
+      res.status(404).json({ message: "Product not found" });
+    }
+  } catch (error) {
+    console.error("Error updating product:", error);
+    res.status(500).json({ message: "Error updating product", error: error.message });
+  }
+};
+
+const deleteProduct = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await ProductModel.findByIdAndDelete(id);
+    if (result) {
+      res.status(200).json({ message: "Product deleted successfully" });
+    } else {
+      res.status(404).json({ message: "Product not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting product", error: error.message });
+  }
+};
+
+module.exports = { CreateProduct, upload, GetProduct, GetOneProduct, productUpdate, 
+  deleteProduct  };

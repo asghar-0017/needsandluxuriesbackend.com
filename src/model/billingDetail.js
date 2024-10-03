@@ -41,6 +41,9 @@ const billingSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product"
       },
+      title:{
+        type: String
+      },
       quantity: {
         type: Number
       },
