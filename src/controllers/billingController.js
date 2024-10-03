@@ -73,14 +73,14 @@ const orderStatusCounts = async (req, res) => {
 
 const getOrderByOrderId=async()=>{
   try{
-    
+
   }catch(error){
 
   }
 
 }
 
-console.log("VAr",abc)
+
 
 module.exports = {
   billingDetail,
