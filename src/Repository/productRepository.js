@@ -18,7 +18,7 @@ const updateDataInRepo = async (productId, updateData) => {
       if (result) {
         return result;
       } else {
-        throw new Error("Product not found");
+        return ("Product not found");
       }
     } catch (error) {
       throw error;

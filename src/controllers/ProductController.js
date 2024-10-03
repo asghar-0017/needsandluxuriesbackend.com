@@ -6,32 +6,21 @@ const productUpdatedData=require('../services/productService.js')
 const CreateProduct = async (req, res) => {
   try {
     const data = req.body;
-    console.log("Data", data);
     if (!req.file) {
       return res.status(400).json({ message: "Image is required" });
     }
-    
     if (typeof data.materials === 'string') {
       data.materials = data.materials.split(',').map((material) => material.trim());
     }
-
     const result = await cloudinary.uploader.upload(req.file.path);
-    console.log("Cloudinary Upload Result:", result);
-
     data.Imageurl = result.secure_url;
-
     const { price, sale, discountprice } = data;
-
     if (sale === 'true' && discountprice) {
       const discount = parseFloat(discountprice) / 100; 
       const newPrice = price - (price * discount); 
       data.newprice = newPrice;
     }
-
-
-
     const response = await ProductModel.create(data);
-
     res.status(201).json({ message: "Product created successfully", response });
   } catch (error) {
     console.error("Error creating product:", error);
@@ -61,28 +50,20 @@ const productUpdate = async (req, res) => {
   try {
     const id = req.params.id;
     let updateData = { ...req.body };
-
-    console.log("Product ID:", id);
-    console.log("Update Data:", updateData);
-
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path);
       updateData.Imageurl = result.secure_url;
     }
-
     const { price, sale, discountprice } = updateData;
-
     if (sale === 'false') {
       delete updateData.discountprice;
       delete updateData.newprice;
     } else if (sale === 'true' && discountprice) {
-      const discount = parseFloat(discountprice) / 100; // Convert percentage to decimal
-      const newPrice = price - (price * discount); // Calculate new discounted price
-      updateData.newprice = newPrice; // Add newprice to updateData
+      const discount = parseFloat(discountprice) / 100;
+      const newPrice = price - (price * discount);
+      updateData.newprice = newPrice; 
     }
-
     const result = await productUpdatedData(id, updateData);
-
     if (result) {
       res.status(200).json({ message: "Product updated successfully", result });
     } else {

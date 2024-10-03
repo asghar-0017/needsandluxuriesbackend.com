@@ -3,12 +3,8 @@ const { AdditionalDB, AdditionalCreate } = require("../Repository/AdditionalRepo
 const CreateAdditional = async (req, res) => {
     try {
       const data = req.body;
-      const productid = req.params.id;
-  
-  
-      data.productId = productid; // Assign product ID from the URL parameter
-  
-      // Proceed to create review
+      const productid = req.params.id
+      data.productId = productid;
       const review = await AdditionalCreate(data);
   
       res.status(200).json({ message: "Additional-Info created successfully", review });

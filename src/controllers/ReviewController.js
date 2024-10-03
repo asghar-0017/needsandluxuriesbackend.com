@@ -4,13 +4,8 @@ const CreateReview = async (req, res) => {
   try {
     const data = req.body;
     const productid = req.params.id;
-
-
-    data.productId = productid; // Assign product ID from the URL parameter
-
-    // Proceed to create review
+    data.productId = productid; 
     const review = await ReviewCreate(data);
-
     res.status(200).json({ message: "Review created successfully", review });
   } catch (err) {
     console.error("Error creating review:", err);
@@ -20,12 +15,10 @@ const CreateReview = async (req, res) => {
 
 const GetSingleReview = async (req, res) => {
   try {
-    const data = await ReviewModel.find({ productId: req.params.id }); // Use findOne to fetch based on productId
-
+    const data = await ReviewModel.find({ productId: req.params.id }); 
     if (!data) {
       return res.status(404).json({ message: "Review not found" });
     }
-
     res.status(200).json({ message: "Review fetched successfully", data });
   } catch (err) {
     console.error("Error fetching review:", err);
@@ -36,13 +29,13 @@ const GetSingleReview = async (req, res) => {
 
 const ShowReview = async (req, res) => {
   try {
-    const data = await ReviewDB(); // Await the result of ReviewDB
+    const data = await ReviewDB();
     res.status(200).json({ message: "Review fetched successfully", data });
   } catch (err) {
-    console.error(err); // Log the error for debugging
+    console.error(err);
     res
       .status(500)
-      .json({ message: "Failed to fetch reviews", error: err.message }); // Send a proper error response
+      .json({ message: "Failed to fetch reviews", error: err.message }); 
   }
 };
 

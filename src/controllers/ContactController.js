@@ -4,12 +4,9 @@ const Mail = require("../services/MailService");
 const Contactus = async (req, res) => {
   try {
     const data = req.body;
-    
-    // Send mail and await the result
-    const result = await Mail(data);
+        const result = await Mail(data);
     
     if (result === true) {
-      // Save contact if mail is successfully sent
       const contact = await SaveContact(data);
       res.status(200).json({ message: 'Contact information saved and email sent successfully.', contact });
     } else {

@@ -135,25 +135,16 @@ const PasswordForm = async (req, res) => {
 const UpdatePassword = async (req, res) => {
   try {
     const { email, newPassword, confirmPassword } = req.body;
-
-    // Validate that both password fields match
     if (newPassword !== confirmPassword) {
       return res.status(400).send("Passwords do not match.");
     }
-
-    // Find the user by email
     const user = await ClientModel.findOne({ email });
 
     if (!user) {
       return res.status(404).send("User not found.");
     }
-
-    // Hash the new password and update the user's password in the database
-
     user.password = newPassword;
     await user.save();
-
-    // Return the new password (for testing purposes only; not recommended for production)
     res.send(`New password is: ${newPassword}`);
   } catch (err) {
     console.log("Error updating password", err);

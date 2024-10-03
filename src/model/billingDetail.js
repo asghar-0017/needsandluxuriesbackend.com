@@ -1,60 +1,80 @@
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require('uuid'); // Importing UUID for random order ID generation
 
-
-
 const billingSchema = new mongoose.Schema({
   firstName: {
-    type: String
+    type: String,
+    required: true,
   },
   lastName: {
-    type: String
+    type: String,
+    required: true,
   },
   address: {
-    type: String
+    type: String,
+    required: true,
   },
   apartment: {
-    type: String
+    type: String,
   },
   postCode: {
-    type: Number
-  },
-  phone: {
-    type: Number
-  },
-  email: {
-    type: String
-  },
-  additionalInformation: {
-    type: String
-  },
-  orderId:{
     type: Number,
   },
-  orderDate:{
+  phone: {
+    type: Number,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  additionalInformation: {
+    type: String,
+  },
+  orderId: {
+    type: String, 
+    default: () => uuidv4(),
+  },
+  orderDate: {
     type: Date,
-    default: Date.now 
+    default: Date.now,
   },
   products: [
     {
       productId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Product"
+        ref: "Product",
       },
-      title:{
-        type: String
+      title: {
+        type: String,
       },
       quantity: {
-        type: Number
+        type: Number,
+        required: true,
       },
       price: {
-        type: Number
+        type: Number,
       },
-      Imageurl:{
-        type:String
+      Imageurl: {
+        type: String,
       },
-    }
-  ]
+    },
+  ],
+  orderStatus: {
+    type: String,
+    enum: ['Pending', 'Processing', 'In Progress', 'Dispatched', 'Completed', 'Cancelled'],
+    default: 'Pending', 
+  },
+  orderCount: {
+    type: Number,
+  },
+
 });
+
+billingSchema.methods.updateOrderStatus = function (newStatus) {
+  this.orderStatus = newStatus;
+  this.statusHistory.push({ status: newStatus });
+  return this.save();
+};
 
 module.exports = BillingModel = mongoose.model("BillingDetail", billingSchema);
