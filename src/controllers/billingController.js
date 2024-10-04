@@ -63,7 +63,7 @@ const deleteBillingDetail = async (req, res) => {
 
 const changeOrderStatus = async (req, res) => {
   try {
-    const { id } = req.params;
+    const  id = req.params.id;
     const { newStatus } = req.body;
     const result = await sendDataInService.changeOrderStatus(id, newStatus);
     res.status(200).json({ message: 'Order status updated successfully.', result });
@@ -84,8 +84,9 @@ const orderStatusCounts = async (req, res) => {
 
 const getOrderByOrderId=async(req,res)=>{
   try {
-    const { orderId } = req.params; 
-    const order = await BillingModel.findOne({ orderId }).populate('products.productId');
+    const  orderId  = req.params.orderId; 
+    console.log("OrderId",orderId)
+    const order = await BillingModel.findOne({orderId }).populate('products.productId');
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }

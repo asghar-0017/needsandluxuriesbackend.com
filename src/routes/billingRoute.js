@@ -13,9 +13,9 @@ const billingRoute = (app) => {
   app.get("/billing-details", getAllBillingDetails);
   app.put("/billing-details/:id", updateBillingDetail);
   app.delete("/billing-details/:id", deleteBillingDetail);
-  app.put("/billing-details/:id", changeOrderStatus);
+  app.put("/billing-status/:id", changeOrderStatus);
   app.get("/order-status-counts", orderStatusCounts); 
-  app.get('/get-order-by-orderId/:id',getOrderByOrderId)
+  app.get('/get-order-by-orderId/:orderId',getOrderByOrderId)
 
 };
 

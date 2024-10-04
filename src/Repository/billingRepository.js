@@ -40,7 +40,9 @@ const deleteBillingDetail = async (id) => {
 const changeOrderStatus = async (id, newStatus) => {
   try {
     const order = await billingDetail.findById(id);
-    if (!order) throw new Error('Order not found');
+    if(!order){
+      return `Order Nit Found With Id ${id}`
+    }else{
     const currentStatus = order.orderStatus;
       order.orderStatus = newStatus;
     order.statusHistory.push({
@@ -49,6 +51,7 @@ const changeOrderStatus = async (id, newStatus) => {
     });
 
     return await order.save();
+  }
   } catch (err) {
     console.error('Error updating Order Status:', err);
     throw new Error('Error updating Order Status');
