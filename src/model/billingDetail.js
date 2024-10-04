@@ -40,7 +40,7 @@ const billingSchema = new mongoose.Schema({
 
   products: [
     {
-      productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+      _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
 
       title: {
         type: String,
