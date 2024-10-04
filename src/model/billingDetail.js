@@ -84,10 +84,6 @@ const billingSchema = new mongoose.Schema({
  
 
 });
-billingSchema.virtual('products.productId').get(function () {
-  return this._id;
-});
-
 billingSchema.methods.updateOrderStatus = function (newStatus) {
   this.orderStatus = newStatus;
   this.statusHistory.push({ status: newStatus });
