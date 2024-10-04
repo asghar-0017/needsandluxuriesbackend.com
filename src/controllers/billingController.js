@@ -65,7 +65,6 @@ const changeOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { newStatus } = req.body;
-    console.log("Api Hit")
     const result = await sendDataInService.changeOrderStatus(id, newStatus);
     res.status(200).json({ message: 'Order status updated successfully.', result });
   } catch (err) {
