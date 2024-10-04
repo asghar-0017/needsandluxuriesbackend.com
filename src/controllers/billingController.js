@@ -13,11 +13,11 @@ const billingDetail = async (req, res) => {
 
     const previousOrderCount = existingBillingDetails.length > 0 
       ? existingBillingDetails.reduce((maxCount, detail) => {
-          return Math.max(maxCount, detail.orderCount || 0); // Use 0 if orderCount is undefined
+          return Math.max(maxCount, detail.orderCount || 0); 
         }, 0)
       : 0;
 
-    data.orderCount = previousOrderCount + 1; // Increment count for the new order
+    data.orderCount = previousOrderCount + 1; 
 
     console.log("OrderCount",data.orderCount)
     const result = await sendDataInService.createBillingDetail(data);

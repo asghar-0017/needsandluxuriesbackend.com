@@ -3,7 +3,7 @@ const authRepository = require('../Repository/adminAuthRepository');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const secretKey = process.env.SCERET_KEY;
+const secretKey = 'thisssssssssisverysecret';
 
 const adminService = {
   login: async ({ userName, password }) => {
