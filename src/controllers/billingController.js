@@ -1,13 +1,25 @@
 const sendDataInService = require("../services/billingService");
 const dataInRepo = require('../Repository/billingRepository');
+const billingDetailModel = require('../model/billingDetail');
+const generateOrderId= require('../mediater/generateOrderId')
 
 
 const billingDetail = async (req, res) => {
   try {
     const data = req.body;
-     const existingBillingDetail = await dataInRepo.getAllBillingDetails();
-     const previousOrderCount = existingBillingDetail.length > 0 ? existingBillingDetail[0].orderCount : 0;
-     data.orderCount = previousOrderCount + 1;
+    data.orderId = generateOrderId();
+    console.log("OrderId",data.orderId)
+    const existingBillingDetails = await dataInRepo.getAllBillingDetails();
+
+    const previousOrderCount = existingBillingDetails.length > 0 
+      ? existingBillingDetails.reduce((maxCount, detail) => {
+          return Math.max(maxCount, detail.orderCount || 0); // Use 0 if orderCount is undefined
+        }, 0)
+      : 0;
+
+    data.orderCount = previousOrderCount + 1; // Increment count for the new order
+
+    console.log("OrderCount",data.orderCount)
     const result = await sendDataInService.createBillingDetail(data);
     res.status(200).json({ message: 'Billing detail created successfully.', result });
   } catch (err) {
@@ -71,11 +83,17 @@ const orderStatusCounts = async (req, res) => {
   }
 };
 
-const getOrderByOrderId=async()=>{
-  try{
-
-  }catch(error){
-
+const getOrderByOrderId=async(req,res)=>{
+  try {
+    const { orderId } = req.params; 
+    const order = await BillingModel.findOne({ orderId }).populate('products.productId');
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    
+    return res.status(200).json({ order });
+  } catch (error) {
+    return res.status(500).json({ message: "An error occurred while tracking the order", error });
   }
 
 }

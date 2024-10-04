@@ -39,6 +39,7 @@ const billingSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+
   products: [
     {
       productId: {
@@ -65,9 +66,26 @@ const billingSchema = new mongoose.Schema({
     enum: ['Pending', 'Processing', 'In Progress', 'Dispatched', 'Completed', 'Cancelled'],
     default: 'Pending', 
   },
+  statusHistory: {
+    type: [{
+      status: {
+        type: String,
+        enum: ['Pending', 'Processing', 'In Progress', 'Dispatched', 'Completed', 'Cancelled'],
+        default: 'Pending',
+      },
+      date: {
+        type: Date,
+        default: Date.now,
+      }
+    }],
+    default: function() {
+      return [{ status: 'Pending', date: Date.now() }];
+    },
+  },
   orderCount: {
     type: Number,
   },
+ 
 
 });
 

@@ -41,7 +41,13 @@ const changeOrderStatus = async (id, newStatus) => {
   try {
     const order = await billingDetail.findById(id);
     if (!order) throw new Error('Order not found');
-    order.orderStatus = newStatus;
+    const currentStatus = order.orderStatus;
+      order.orderStatus = newStatus;
+    order.statusHistory.push({
+      status: newStatus,
+      date: new Date() 
+    });
+
     return await order.save();
   } catch (err) {
     console.error('Error updating Order Status:', err);
