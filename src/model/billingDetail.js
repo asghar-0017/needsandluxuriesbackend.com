@@ -40,7 +40,7 @@ const billingSchema = new mongoose.Schema({
 
   products: [
     {
-      _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+      productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
 
       title: {
         type: String,
@@ -83,6 +83,9 @@ const billingSchema = new mongoose.Schema({
   },
  
 
+});
+billingSchema.virtual('products.productId').get(function () {
+  return this._id;
 });
 
 billingSchema.methods.updateOrderStatus = function (newStatus) {
