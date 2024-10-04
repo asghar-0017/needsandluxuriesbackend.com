@@ -85,11 +85,16 @@ const orderStatusCounts = async (req, res) => {
 const getOrderByOrderId=async(req,res)=>{
   try {
     const  orderId  = req.params.orderId; 
-    console.log("OrderId",orderId)
-    const order = await BillingModel.findOne({orderId }).populate('products.productId');
+    console.log("orderId",orderId)
+    const order = await billingDetailModel
+      .findOne({ orderId })
+      .populate('products.productId'); // Make sure 'productId' is a valid reference in your schema
+
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
+
+    console.log("Order:", order);
     
     return res.status(200).json({ order });
   } catch (error) {

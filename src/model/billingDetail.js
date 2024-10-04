@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { v4: uuidv4 } = require('uuid'); // Importing UUID for random order ID generation
 
 const billingSchema = new mongoose.Schema({
   firstName: {
@@ -33,7 +32,6 @@ const billingSchema = new mongoose.Schema({
   },
   orderId: {
     type: String, 
-    default: () => uuidv4(),
   },
   orderDate: {
     type: Date,
@@ -63,14 +61,14 @@ const billingSchema = new mongoose.Schema({
   ],
   orderStatus: {
     type: String,
-    enum: ['Pending', 'Processing', 'In Progress', 'Dispatched', 'Completed', 'Cancelled'],
+    enum: ['Pending', 'Dispatched', 'Cancelled'],
     default: 'Pending', 
   },
   statusHistory: {
     type: [{
       status: {
         type: String,
-        enum: ['Pending', 'Processing', 'In Progress', 'Dispatched', 'Completed', 'Cancelled'],
+        enum: ['Pending', 'Dispatched', 'Cancelled'],
         default: 'Pending',
       },
       date: {
