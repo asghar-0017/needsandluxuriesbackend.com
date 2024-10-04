@@ -88,7 +88,6 @@ const getOrderByOrderId=async(req,res)=>{
     console.log("orderId",orderId)
     const order = await billingDetailModel
       .findOne({ orderId })
-      .populate('products.productId'); // Make sure 'productId' is a valid reference in your schema
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
