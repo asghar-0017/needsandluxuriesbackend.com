@@ -1,5 +1,6 @@
 const adminService = require('../services/adminAuthService');
 const generateResetCode = require('../mediater/generateOrderId');
+const generateResetCode = require('../mediater/generateResetCode')
 const { sendResetEmail } = require('../mediater/sendResetMail');
 const dotenv = require('dotenv');
 
