@@ -48,7 +48,7 @@ const adminService = {
 
   updatePassword: async (newPassword) => {
     console.log("NewPassword",newPassword)
-    const admin = await authRepository.findByEmail(process.env.ADMIN_EMAIL);
+    const admin = await authRepository.findByEmail('rajaasgharali009@gmail.com');
     if (admin) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       admin.password = hashedPassword;
