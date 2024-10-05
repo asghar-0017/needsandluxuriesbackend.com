@@ -1,6 +1,6 @@
 const adminService = require('../services/adminAuthService');
 const generateResetCode = require('../mediater/generateOrderId');
-const generateResetCode = require('../mediater/generateResetCode')
+const generateResetCodeofEmail = require('../mediater/generateResetCode')
 const { sendResetEmail } = require('../mediater/sendResetMail');
 const dotenv = require('dotenv');
 
@@ -23,7 +23,6 @@ const adminAuth = {
   },
   logout: async (req, res) => {
     try {
-      // Extract token from authorization header
       const authHeader = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).send({ message: 'No token provided' });
@@ -31,7 +30,6 @@ const adminAuth = {
   
       const token = authHeader.split(' ')[1];
   
-      // Call the service to handle token invalidation
       const result = await adminService.logout(token);
   
       if (result) {
@@ -48,7 +46,7 @@ const adminAuth = {
   forgotPassword: async (req, res) => {
     try {
       const { email } = req.body;
-      const code = generateResetCode();
+      const code = generateResetCodeofEmail();
       console.log("Email",email)
       console.log("code",code)
       const result = await adminService.saveResetCode(code, email);
