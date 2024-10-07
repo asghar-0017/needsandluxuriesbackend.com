@@ -12,8 +12,6 @@ const adminService = {
       const match = await bcrypt.compare(password, admin.password);
       if (match) {
         const token = jwt.sign({ userName: admin.userName, role: admin.role }, secretKey, { expiresIn: '10h' });
-
-        // Add the new session token to the sessions array
         admin.sessions.push({ token });
         await authRepository.save(admin);
 

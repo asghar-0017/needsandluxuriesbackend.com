@@ -34,6 +34,9 @@ const ProductSchema = new mongoose.Schema({
   sale:{
     type:Boolean
   },
+  collection:{
+    type: String,
+  },
   newprice:{
     type:Number
   },
