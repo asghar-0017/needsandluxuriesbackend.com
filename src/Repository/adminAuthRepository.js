@@ -18,9 +18,10 @@ const authRepository = {
     return await admin.save();
   },
 
-  findTokenByToken: async (verifyToken) => {
-    return await Admin.findOne({ verifyToken });
-},
+  findTokenByToken: async (token) => {
+    return await Admin.findOne({ "sessions.token": token });
+  }
+  
 };
 
 module.exports = authRepository;

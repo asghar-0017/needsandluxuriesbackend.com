@@ -27,11 +27,12 @@ const adminAuth = {
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).send({ message: 'No token provided' });
       }
-  
+
       const token = authHeader.split(' ')[1];
-  
+
       const result = await adminService.logout(token);
-  
+      console.log("Result",result)
+
       if (result) {
         res.status(200).send({ message: 'Logged out successfully' });
       } else {
