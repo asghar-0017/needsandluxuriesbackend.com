@@ -37,6 +37,16 @@ const GetProduct = async (req, res) => {
   }
 };
 
+const GetProductCollection = async (req, res) => {
+  try {
+    const collections = await ProductModel.distinct("collection");
+    res.status(200).json({ message: "Collections fetched successfully", collections });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching collections", error: error.message });
+  }
+};
+
+
 
 const GetOneProduct = async (req, res) => {
   try {
@@ -90,4 +100,4 @@ const deleteProduct = async (req, res) => {
 };
 
 module.exports = { CreateProduct, upload, GetProduct, GetOneProduct, productUpdate, 
-  deleteProduct  };
+  deleteProduct,GetProductCollection  };

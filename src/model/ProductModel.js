@@ -35,7 +35,8 @@ const ProductSchema = new mongoose.Schema({
     type:Boolean
   },
   collection:{
-    type: String,
+  type: String,
+
   },
   newprice:{
     type:Number
