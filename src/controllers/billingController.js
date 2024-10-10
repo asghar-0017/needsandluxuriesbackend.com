@@ -8,7 +8,7 @@ const { cloudinary, upload } = require("../services/ImageService.js");
 const billingDetail = async (req, res) => {
   try {
     const data = req.body;
-    if (data.cashOnDelivery === 'false' && !data.image) {
+    if (data.cashOnDelivery === 'false' && !req.file) {
       return res.status(400).send("Image is Required When Cash On Delivery");
   }
    if (data.cashOnDelivery === 'false' && req.file) {
