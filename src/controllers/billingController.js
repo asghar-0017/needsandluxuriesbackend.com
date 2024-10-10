@@ -9,6 +9,9 @@ const { upload } = require('../services/ImageService');
 const billingDetail = async (req, res) => {
   try {
     const data = req.body;
+    if(!data.firstName  || !data.lastName || !data.email || !data.address || !data.phone){
+      return res.status(400).json({message:"please fill Required Field"})
+    }
     data.cashOnDelivery = data.cashOnDelivery === 'true' || data.cashOnDelivery === true;
 
     if (!data.cashOnDelivery && !req.file) {
