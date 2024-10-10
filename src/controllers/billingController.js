@@ -8,13 +8,17 @@ const { cloudinary, upload } = require("../services/ImageService.js");
 const billingDetail = async (req, res) => {
   try {
     const data = req.body;
-    if (data.cashOnDelivery === 'false' && !req.file) {
-      return res.status(400).send("Image is Required When Cash On Delivery");
-  }
-   if (data.cashOnDelivery === 'false' && req.file) {
-    const resultData = await cloudinary.uploader.upload(req.file.path);
-    data.image = resultData.secure_url; 
-}
+    data.cashOnDelivery = data.cashOnDelivery === 'true' || data.cashOnDelivery === true;
+
+    if (!data.cashOnDelivery && !req.file) {
+      return res.status(400).json({ message: "Image is required when Cash on Delivery is false." });
+    }
+
+    if (!data.cashOnDelivery && req.file) {
+      console.log("hit")
+      const resultData = await cloudinary.uploader.upload(req.file.path);
+      data.image = resultData.secure_url; 
+    }
     data.orderId = generateOrderId();
     console.log("OrderId",data.orderId)
     const existingBillingDetails = await dataInRepo.getAllBillingDetails();
