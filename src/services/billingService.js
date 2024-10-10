@@ -3,11 +3,11 @@ const billingDetailMail = require('../mediater/billingDetail');
 
 const createBillingDetail = async (data) => {
   try {
-    // const sendEmail = await billingDetailMail(data);
-    // if (sendEmail) {
+    const sendEmail = await billingDetailMail(data);
+    if (sendEmail) {
       const result = await dataInRepo.createBillingDetail(data);
       return result;
-    // }
+    }
   } catch (error) {
     throw error;
   }

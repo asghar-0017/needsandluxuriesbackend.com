@@ -2,7 +2,7 @@ const sendDataInService = require("../services/billingService");
 const dataInRepo = require('../Repository/billingRepository');
 const billingDetailModel = require('../model/billingDetail');
 const generateOrderId= require('../mediater/generateOrderId')
-const { upload } = require('../services/ImageService'); // Import the upload middleware
+const { upload } = require('../services/ImageService'); 
 
 
 
@@ -16,9 +16,8 @@ const billingDetail = async (req, res) => {
     }
 
     if (!data.cashOnDelivery && req.file) {
-      data.image = req.file.path; // Cloudinary URL from multer-storage-cloudinary
+      data.image = req.file.path; 
     }
-
     data.orderId = generateOrderId();
     console.log("OrderId",data.orderId)
     const existingBillingDetails = await dataInRepo.getAllBillingDetails();
