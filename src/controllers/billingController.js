@@ -10,14 +10,17 @@ const billingDetail = async (req, res) => {
     const data = req.body;
     data.cashOnDelivery = data.cashOnDelivery === 'true' || data.cashOnDelivery === true;
 
-    if (!data.cashOnDelivery && !req.file) {
+    if (!data.cashOnDelivery && !data.image) {
       return res.status(400).json({ message: "Image is required when Cash on Delivery is false." });
     }
 
     if (!data.cashOnDelivery && req.file) {
-      console.log("hit")
-      const resultData = await cloudinary.uploader.upload(req.file.path);
-      data.image = resultData.secure_url; 
+      try {
+        const resultData = await cloudinary.uploader.upload(req.file.path);
+        data.image = resultData.secure_url; 
+      } catch (uploadError) {
+        return res.status(500).json({ message: 'Image upload failed.', error: uploadError.message });
+      }
     }
     data.orderId = generateOrderId();
     console.log("OrderId",data.orderId)
