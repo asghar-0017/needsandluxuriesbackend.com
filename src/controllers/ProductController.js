@@ -13,6 +13,7 @@ const CreateProduct = async (req, res) => {
       data.materials = data.materials.split(',').map((material) => material.trim());
     }
     const result = await cloudinary.uploader.upload(req.file.path);
+    console.log("Result",result)
     data.Imageurl = result.secure_url;
     const { price, sale, discountprice } = data;
     if (sale === 'true' && discountprice) {

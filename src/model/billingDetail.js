@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const billingSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -36,6 +35,12 @@ const billingSchema = new mongoose.Schema({
   orderDate: {
     type: Date,
     default: Date.now,
+  },
+  cashOnDelivery:{
+    type: Boolean, 
+  },
+  image:{
+    type: String, 
   },
 
   products: [

@@ -2,11 +2,19 @@ const sendDataInService = require("../services/billingService");
 const dataInRepo = require('../Repository/billingRepository');
 const billingDetailModel = require('../model/billingDetail');
 const generateOrderId= require('../mediater/generateOrderId')
+const { cloudinary, upload } = require("../services/ImageService.js");
 
 
 const billingDetail = async (req, res) => {
   try {
     const data = req.body;
+    if (data.cashOnDelivery === 'true' && !req.file) {
+      return res.status(400).send("Image is Required When Cash On Delivery");
+  }
+   if (data.cashOnDelivery === 'true' && req.file) {
+    const resultData = await cloudinary.uploader.upload(req.file.path);
+    data.image = resultData.secure_url; // Save the Cloudinary URL
+}
     data.orderId = generateOrderId();
     console.log("OrderId",data.orderId)
     const existingBillingDetails = await dataInRepo.getAllBillingDetails();
