@@ -2,7 +2,8 @@ const sendDataInService = require("../services/billingService");
 const dataInRepo = require('../Repository/billingRepository');
 const billingDetailModel = require('../model/billingDetail');
 const generateOrderId= require('../mediater/generateOrderId')
-const { cloudinary, upload } = require("../services/ImageService.js");
+const { upload } = require('../services/ImageService'); // Import the upload middleware
+
 
 
 const billingDetail = async (req, res) => {
@@ -10,18 +11,14 @@ const billingDetail = async (req, res) => {
     const data = req.body;
     data.cashOnDelivery = data.cashOnDelivery === 'true' || data.cashOnDelivery === true;
 
-    if (!data.cashOnDelivery && !data.image) {
+    if (!data.cashOnDelivery && !req.file) {
       return res.status(400).json({ message: "Image is required when Cash on Delivery is false." });
     }
 
     if (!data.cashOnDelivery && req.file) {
-      try {
-        const resultData = await cloudinary.uploader.upload(req.file.path);
-        data.image = resultData.secure_url; 
-      } catch (uploadError) {
-        return res.status(500).json({ message: 'Image upload failed.', error: uploadError.message });
-      }
+      data.image = req.file.path; // Cloudinary URL from multer-storage-cloudinary
     }
+
     data.orderId = generateOrderId();
     console.log("OrderId",data.orderId)
     const existingBillingDetails = await dataInRepo.getAllBillingDetails();
