@@ -38,6 +38,8 @@ const billingSchema = new mongoose.Schema({
   },
   cashOnDelivery:{
     type: Boolean, 
+    default:true
+
   },
   image:{
     type: String, 
