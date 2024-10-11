@@ -83,7 +83,7 @@ const billingDetail = async (req, res) => {
 
     // Create billing detail
     const result = await sendDataInService.createBillingDetail(data);
-    res.status(200).json({ message: 'Billing detail created successfully.', result });
+    res.status(200).json({ message: 'Billing detail created successfully.', data:data });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Internal Server Error.' });
