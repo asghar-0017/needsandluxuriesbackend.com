@@ -5,90 +5,50 @@ const generateOrderId= require('../mediater/generateOrderId')
 const { cloudinary,upload } = require('../services/ImageService'); 
 
 
-
-// const billingDetail = async (req, res) => {
-//   try {
-//     const data = req.body;
-//     if(!data.firstName  || !data.lastName || !data.email || !data.address || !data.phone){
-//       return res.status(400).json({message:"please fill Required Field"})
-//     }
-//     data.cashOnDelivery = data.cashOnDelivery === 'true' || data.cashOnDelivery === true;
-
-//     if (!data.cashOnDelivery && !req.file) {
-//       return res.status(400).json({ message: "Image is required when Cash on Delivery is false." });
-//     }
-//     const resultData = await cloudinary.uploader.upload(req.file.path);
-//     console.log("Result",resultData)
-//     data.image = resultData.secure_url
-
-//     data.orderId = generateOrderId();
-//     console.log("OrderId",data.orderId)
-//     const existingBillingDetails = await dataInRepo.getAllBillingDetails();
-
-//     const previousOrderCount = existingBillingDetails.length > 0 
-//       ? existingBillingDetails.reduce((maxCount, detail) => {
-//           return Math.max(maxCount, detail.orderCount || 0); 
-//         }, 0)
-//       : 0;
-
-//     data.orderCount = previousOrderCount + 1; 
-
-//     console.log("OrderCount",data.orderCount)
-//     const result = await sendDataInService.createBillingDetail(data);
-//     res.status(200).json({ message: 'Billing detail created successfully.', result });
-//   } catch (err) {
-//     console.log(err);
-//     res.status(500).json({ message: 'Internal Server Error.' });
-//   }
-// };
-
 const billingDetail = async (req, res) => {
   try {
     const data = req.body;
+    let products = req.body.products;
 
-    // Validate required fields
+    if (typeof products === 'string') {
+      products = JSON.parse(products);
+    }
     if (!data.firstName || !data.lastName || !data.email || !data.address || !data.phone) {
       return res.status(400).json({ message: "Please fill all required fields." });
     }
 
-    // Convert cashOnDelivery to a boolean
     data.cashOnDelivery = data.cashOnDelivery === 'true' || data.cashOnDelivery === true;
 
-    // Handle image upload based on cashOnDelivery
-    if (!data.cashOnDelivery) {
-      if (!req.file) {
-        return res.status(400).json({ message: "Image is required when Cash on Delivery is false." });
-      }
-      // Upload image to Cloudinary
+    if (!data.cashOnDelivery && req.file) {
       const resultData = await cloudinary.uploader.upload(req.file.path);
-      console.log("Result", resultData);
       data.image = resultData.secure_url;
     }
 
-    // Generate order ID
     data.orderId = generateOrderId();
-    console.log("OrderId", data.orderId);
-
-    // Get existing billing details
-    const existingBillingDetails = await dataInRepo.getAllBillingDetails();
-
-    // Calculate previous order count
-    const previousOrderCount = existingBillingDetails.length > 0
-      ? existingBillingDetails.reduce((maxCount, detail) => Math.max(maxCount, detail.orderCount || 0), 0)
-      : 0;
-
-    // Set order count
+    const previousOrderCount = await billingDetailModel.countDocuments();
     data.orderCount = previousOrderCount + 1;
-    console.log("OrderCount", data.orderCount);
 
-    // Create billing detail
-    const result = await sendDataInService.createBillingDetail(data);
-    res.status(200).json({ message: 'Billing detail created successfully.', data:data });
+    const billingDetailData = {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      address: data.address,
+      phone: data.phone,
+      cashOnDelivery: data.cashOnDelivery,
+      image: data.image,
+      orderId: data.orderId,
+      orderCount: data.orderCount,
+      products: products 
+    };
+
+    const result = await billingDetailModel.create(billingDetailData);
+    res.status(200).json({ message: 'Billing detail created successfully.', data: result });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Internal Server Error.' });
+    res.status(500).json({ message: 'Internal Server Error.', error: err.message });
   }
 };
+
 
 
 const getAllBillingDetails = async (req, res) => {
