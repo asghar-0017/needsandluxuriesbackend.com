@@ -8,6 +8,7 @@ const AdditionalRoute = require("./routes/AdditionalRoute.js")
 const ContactRoute = require("./routes/ContactRoute.js")
 const billingRoute=require('./routes/billingRoute.js')
 const AdminAuthRoute=require('./routes/adminAuthRoute.js')
+const stratchRoutes=require('./routes/stratchingRoute.js')
 
 const app = express();
 const cors = require("cors")
@@ -27,6 +28,9 @@ app.use(express.json());
   ContactRoute(app)
   billingRoute(app)
   AdminAuthRoute(app)
+  stratchRoutes(app)
+  
+
   
   app.get("/", (req, res) => {
     res.send("hello world");
