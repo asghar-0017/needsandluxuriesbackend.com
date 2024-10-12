@@ -21,11 +21,52 @@ const stratchData={
         } catch (error) {
             console.error(error);
             res.status(500).json({
-                message: 'Error adding stretch data',
+                message: 'Interbal Server Error',
                 error: error.message,
             });
         }
     },
+    getStatchData:async(req,res)=>{
+        try{
+            const data= await StretchModel.find()
+            res.status(201).json({
+                message: 'Stretch data added successfully!',
+                data: data,
+            });
+
+        }catch(error){
+            console.error(error);
+            res.status(500).json({
+                message: 'Interbal Server Error',
+                error: error.message,
+            });
+        }
+    },
+    getStatchDataById:async(req,res)=>{
+        const id=req.params.id
+        console.log(id)
+        try{
+            const data = await StretchModel.findById(id);
+
+    if (!data) {
+        return res.status(404).json({
+            message: 'Stretch data not found.',
+        });
+    }
+
+    res.status(200).json({
+        message: 'Stretch data retrieved successfully!',
+        data: data,
+    });
+
+        }catch(error){
+            console.error(error);
+            res.status(500).json({
+                message: 'Interbal Server Error',
+                error: error.message,
+            });
+        }
+    }
 }
 
 module.exports=stratchData
