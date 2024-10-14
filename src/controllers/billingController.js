@@ -94,10 +94,10 @@ const billingDetail = async (req, res) => {
         data.stretchData = JSON.parse(data.stretchData);
       }
 
-      if (req.files && req.files.stitchingImage) {
-        const stitchingImageFile = req.files.stitchingImage[0];
+      if (req.files && req.files.image) {
+        const stitchingImageFile = req.files.image[0];
         const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
-        data.stitchingImage = stitchingResult.secure_url;
+        data.image = stitchingResult.secure_url;
       }
 
       stretchData = await StretchModel.create(data.stretchData);
