@@ -105,8 +105,19 @@ const billingDetail = async (req, res) => {
     data.orderCount = previousOrderCount + 1;
 
     const billingDetailData = {
-      ...data,
-      products,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email:data.email,
+      address: data.address,
+      phone: data.phone,
+      postCode:data.postCode,
+      additionalInformation:data.additionalInformation,
+      apartment:data.apartment,
+      cashOnDelivery: data.cashOnDelivery,
+      image: data.image,
+      orderId: data.orderId,
+      orderCount: data.orderCount,
+      products: products ,
       stretchData: stretchData ,
     };
 
