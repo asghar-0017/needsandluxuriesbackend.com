@@ -38,7 +38,7 @@ const billingSchema = new mongoose.Schema({
   }],
   orderCount: { type: Number },
 
-  isStituching:{
+  isStitching:{
      type: Boolean, default: false
     },
   stretchData: { 

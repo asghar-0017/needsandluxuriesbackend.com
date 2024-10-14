@@ -10,7 +10,8 @@ const {
 const { cloudinary, upload } = require("../services/ImageService.js");
 
 const billingRoute = (app) => {
-  app.post("/create-billing-detail",  upload.single('image'), billingDetail);
+  app.post("/create-billing-detail",   upload.fields([{ name: 'cashOnDeliveryImage', maxCount: 1 }, { name: 'stitchingImage', maxCount: 1 }]), 
+  billingDetail);
   app.get("/billing-details", getAllBillingDetails);
   app.put("/billing-details/:id", updateBillingDetail);
   app.delete("/billing-details/:id", deleteBillingDetail);
