@@ -3,6 +3,8 @@ const dataInRepo = require('../Repository/billingRepository');
 const billingDetailModel = require('../model/billingDetail');
 const generateOrderId= require('../mediater/generateOrderId')
 const { cloudinary,upload } = require('../services/ImageService'); 
+const StretchModel = require('../model/stratchModel'); // Import the Stretch model
+
 
 
 const billingDetail = async (req, res) => {
@@ -24,9 +26,18 @@ const billingDetail = async (req, res) => {
       data.image = resultData.secure_url;
     }
 
+    let stretchData;
+
+    if (data.isStituching=== 'true' || data.isStituching===true) {
+      stretchData = await StretchModel.create(data.stretchData);
+    }
+
+
     data.orderId = generateOrderId();
     const previousOrderCount = await billingDetailModel.countDocuments();
     data.orderCount = previousOrderCount + 1;
+
+
 
     const billingDetailData = {
       firstName: data.firstName,
@@ -41,7 +52,9 @@ const billingDetail = async (req, res) => {
       image: data.image,
       orderId: data.orderId,
       orderCount: data.orderCount,
-      products: products 
+      products: products ,
+      stretchData: stretchData// Reference the stretch data ID
+
     };
 
     const result = await billingDetailModel.create(billingDetailData);

@@ -1,5 +1,7 @@
 // models/BillingDetail.js
 const mongoose = require("mongoose");
+const StretchModel = require('./stratchModel'); // Import the Stretch model
+
 
 const billingSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
@@ -35,7 +37,17 @@ const billingSchema = new mongoose.Schema({
     date: { type: Date, default: Date.now },
   }],
   orderCount: { type: Number },
+
+  isStituching:{
+     type: Boolean, default: false
+    },
+  stretchData: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'StretchData',
+    required: false 
+  }
 });
+
 
 billingSchema.methods.updateOrderStatus = function (newStatus) {
   this.orderStatus = newStatus;
