@@ -139,25 +139,53 @@ const billingDetail = async (req, res) => {
 
 const getAllBillingDetails = async (req, res) => {
   try {
-    const result = await sendDataInService.getAllBillingDetails();
-    res.status(200).json({ message: 'Billing details fetched successfully.', result });
+    const billingDetails = await billingDetailModel.find().populate('stretchData');
+    res.status(200).json({ message: 'Billing details fetched successfully.', billingDetails });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: 'Internal Server Error.' });
+  }
+};
+const updateBillingDetail = async (req, res) => {
+  try {
+    const { id } = req.params;  // Billing detail ID
+    let updateData = req.body;
+
+    // If there are uploaded images, process them
+    if (req.files && req.files.cashOnDeliveryImage) {
+      const cashOnDeliveryImageFile = req.files.cashOnDeliveryImage[0];
+      const cashOnDeliveryResult = await cloudinary.uploader.upload(cashOnDeliveryImageFile.path);
+      updateData.cashOnDeliveryImage = cashOnDeliveryResult.secure_url;
+    }
+
+    if (req.files && req.files.stitchingImage) {
+      const stitchingImageFile = req.files.stitchingImage[0];
+      const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
+      updateData.stitchingImage = stitchingResult.secure_url;
+    }
+
+    if (updateData.isStitching === 'true' || updateData.isStitching === true) {
+      if (typeof updateData.stretchData === 'string') {
+        updateData.stretchData = JSON.parse(updateData.stretchData); // Parse stitching data if it is in string format
+      }
+
+      if (updateData.stretchData && updateData.stretchData._id) {
+        await StretchModel.findByIdAndUpdate(updateData.stretchData._id, updateData.stretchData);
+      } else {
+        const newStretchData = await StretchModel.create(updateData.stretchData);
+        updateData.stretchData = newStretchData._id; // Save reference to the new stitching data
+      }
+    }
+
+    const updatedBillingDetail = await billingDetailModel.findByIdAndUpdate(id, updateData, { new: true });
+
+    res.status(200).json({ message: 'Billing detail updated successfully.', result: updatedBillingDetail });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Internal Server Error.', error: err.message });
   }
 };
 
-const updateBillingDetail = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updateData = req.body;
-    const result = await sendDataInService.updateBillingDetail(id, updateData);
-    res.status(200).json({ message: 'Billing detail updated successfully.', result });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: 'Internal Server Error.' });
-  }
-};
 
 const deleteBillingDetail = async (req, res) => {
   try {
