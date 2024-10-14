@@ -72,11 +72,9 @@ const billingDetail = async (req, res) => {
   try {
     const data = req.body;
     let products = req.body.products;
-
     if (typeof products === 'string') {
       products = JSON.parse(products);
     }
-
     if (!data.firstName || !data.lastName || !data.email || !data.address || !data.phone) {
       return res.status(400).json({ message: "Please fill all required fields." });
     }
@@ -92,11 +90,16 @@ const billingDetail = async (req, res) => {
 
     let stretchData;
     if (data.isStitching) {
+      if (typeof data.stretchData === 'string') {
+        data.stretchData = JSON.parse(data.stretchData);
+      }
+
       if (req.files && req.files.stitchingImage) {
         const stitchingImageFile = req.files.stitchingImage[0];
         const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
         data.stitchingImage = stitchingResult.secure_url;
       }
+
       stretchData = await StretchModel.create(data.stretchData);
     }
 
@@ -107,27 +110,30 @@ const billingDetail = async (req, res) => {
     const billingDetailData = {
       firstName: data.firstName,
       lastName: data.lastName,
-      email:data.email,
+      email: data.email,
       address: data.address,
       phone: data.phone,
-      postCode:data.postCode,
-      additionalInformation:data.additionalInformation,
-      apartment:data.apartment,
+      postCode: data.postCode,
+      additionalInformation: data.additionalInformation,
+      apartment: data.apartment,
       cashOnDelivery: data.cashOnDelivery,
-      image: data.image,
+      image: data.image || data.cashOnDeliveryImage, 
       orderId: data.orderId,
       orderCount: data.orderCount,
-      products: products ,
-      stretchData: stretchData ,
+      products: products, 
+      stretchData: stretchData
     };
 
     const result = await billingDetailModel.create(billingDetailData);
+
     res.status(200).json({ message: 'Billing detail created successfully.', data: result });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Internal Server Error.', error: err.message });
   }
 };
+
+
 
 
 
