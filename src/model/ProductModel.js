@@ -38,6 +38,14 @@ const ProductSchema = new mongoose.Schema({
   type: String,
 
   },
+  isStitched:{
+    type:Boolean
+
+  },
+  stitchedPrice:{
+    type:Number
+
+  },
   newprice:{
     type:Number
   },

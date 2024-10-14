@@ -88,20 +88,12 @@ const billingDetail = async (req, res) => {
       data.cashOnDeliveryImage = cashOnDeliveryResult.secure_url;
     }
 
-    let stretchData;
-    if (data.isStitching) {
-      if (typeof data.stretchData === 'string') {
-        data.stretchData = JSON.parse(data.stretchData);
-      }
-
-      if (req.files && req.files.image) {
-        const stitchingImageFile = req.files.image[0];
-        const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
-        data.image = stitchingResult.secure_url;
-      }
-
-      stretchData = await StretchModel.create(data.stretchData);
+    if (req.files && req.files.stitchingImage) {
+      const stitchingImageFile = req.files.stitchingImage[0];
+      const stitchingImageResult = await cloudinary.uploader.upload(stitchingImageFile.path);
+      data.stitchingImage = stitchingImageResult.secure_url;
     }
+
 
     data.orderId = generateOrderId();
     const previousOrderCount = await billingDetailModel.countDocuments();
@@ -120,9 +112,41 @@ const billingDetail = async (req, res) => {
       image: data.image || data.cashOnDeliveryImage, 
       orderId: data.orderId,
       orderCount: data.orderCount,
-      products: products, 
-      stretchData: stretchData
+      products: products,
+      
+      customerName: data.stretch?.customerName || null,
+      height: data.stretch?.height || null,
+      weight: data.stretch?.weight || null,
+      stitchImage: data.stretch?.stitchImage || null,
+      
+      kameezBustCircumference: data.stretch?.kameez?.bustCircumference || null,
+      kameezWaistCircumference: data.stretch?.kameez?.waistCircumference || null,
+      kameezHipCircumference: data.stretch?.kameez?.hipCircumference || null,
+      kameezShoulderWidth: data.stretch?.kameez?.shoulderWidth || null,
+      kameezLength: data.stretch?.kameez?.kameezLength || null,
+      kameezSleeveLength: data.stretch?.kameez?.sleeveLength || null,
+      kameezArmholeCircumference: data.stretch?.kameez?.armholeCircumference || null,
+      kameezBicepCircumference: data.stretch?.kameez?.bicepCircumference || null,
+      kameezNeckCircumference: data.stretch?.kameez?.neckCircumference || null,
+      kameezFrontNeckDepth: data.stretch?.kameez?.frontNeckDepth || null,
+      kameezShoulderToWaistLength: data.stretch?.kameez?.shoulderToWaistLength || null,
+      kameezSleeveOpeningCircumference: data.stretch?.kameez?.sleeveOpeningCircumference || null,
+    
+      shalwarWaistCircumference: data.stretch?.shalwar?.waistCircumference || null,
+      shalwarHipCircumference: data.stretch?.shalwar?.hipCircumference || null,
+      shalwarThighCircumference: data.stretch?.shalwar?.thighCircumference || null,
+      shalwarInseamLength: data.stretch?.shalwar?.inseamLength || null,
+      shalwarOutseamLength: data.stretch?.shalwar?.outseamLength || null,
+      shalwarAnkleOpening: data.stretch?.shalwar?.ankleOpening || null,
+      shalwarRise: data.stretch?.shalwar?.rise || null,
+      shalwarCrotchDepth: data.stretch?.shalwar?.crotchDepth || null,
+    
+      kameezFit: data.stretch?.fitPreferences?.kameezFit || null,
+      sleeveStyle: data.stretch?.fitPreferences?.sleeveStyle || null,
+      pantStyle: data.stretch?.fitPreferences?.pantStyle || null,
+      necklineStyle: data.stretch?.fitPreferences?.necklineStyle || null,
     };
+    
 
     const result = await billingDetailModel.create(billingDetailData);
 
@@ -139,7 +163,7 @@ const billingDetail = async (req, res) => {
 
 const getAllBillingDetails = async (req, res) => {
   try {
-    const billingDetails = await billingDetailModel.find().populate('stretchData');
+    const billingDetails = await billingDetailModel.find();
     res.status(200).json({ message: 'Billing details fetched successfully.', billingDetails });
   } catch (err) {
     console.log(err);

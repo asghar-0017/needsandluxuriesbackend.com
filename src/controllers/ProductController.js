@@ -15,12 +15,18 @@ const CreateProduct = async (req, res) => {
     const result = await cloudinary.uploader.upload(req.file.path);
     console.log("Result",result)
     data.Imageurl = result.secure_url;
-    const { price, sale, discountprice } = data;
+    const { price, sale, discountprice,isStitched,stitchedPrice } = data;
+
     if (sale === 'true' && discountprice) {
       const discount = parseFloat(discountprice) / 100; 
       const newPrice = price - (price * discount); 
       data.newprice = newPrice;
     }
+
+    if (isStitched === 'true' && stitchedPrice) {
+      data.stitchedPrice = stitchedPrice;
+    }
+
     const response = await ProductModel.create(data);
     res.status(201).json({ message: "Product created successfully", response });
   } catch (error) {
