@@ -139,8 +139,8 @@ const billingDetail = async (req, res) => {
 
 const getAllBillingDetails = async (req, res) => {
   try {
-    const billingDetails = await billingDetailModel.find().populate('stretchData');
-    res.status(200).json({ message: 'Billing details fetched successfully.', billingDetails });
+    const result = await billingDetailModel.find().populate('stretchData');
+    res.status(200).json({ message: 'Billing details fetched successfully.', result });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: 'Internal Server Error.' });
