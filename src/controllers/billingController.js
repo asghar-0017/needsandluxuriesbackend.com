@@ -88,12 +88,20 @@ const billingDetail = async (req, res) => {
       data.cashOnDeliveryImage = cashOnDeliveryResult.secure_url;
     }
 
-    if (req.files && req.files.stitchingImage) {
-      const stitchingImageFile = req.files.stitchingImage[0];
-      const stitchingImageResult = await cloudinary.uploader.upload(stitchingImageFile.path);
-      data.stitchingImage = stitchingImageResult.secure_url;
-    }
+    let stretchData;
+    if (data.isStitching) {
+      if (typeof data.stretchData === 'string') {
+        data.stretchData = JSON.parse(data.stretchData);
+      }
 
+      if (req.files && req.files.stitchImage) {
+        const stitchingImageFile = req.files.stitchImage[0];
+        const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
+        data.stitchImage = stitchingResult.secure_url;
+      }
+
+      stretchData = await StretchModel.create(data.stretchData);
+    }
 
     data.orderId = generateOrderId();
     const previousOrderCount = await billingDetailModel.countDocuments();
@@ -109,44 +117,12 @@ const billingDetail = async (req, res) => {
       additionalInformation: data.additionalInformation,
       apartment: data.apartment,
       cashOnDelivery: data.cashOnDelivery,
-      image: data.image || data.cashOnDeliveryImage, 
+      cashOnDeliveryImage:data.cashOnDeliveryImage,
       orderId: data.orderId,
       orderCount: data.orderCount,
-      products: products,
-      
-      customerName: data.stretch?.customerName || null,
-      height: data.stretch?.height || null,
-      weight: data.stretch?.weight || null,
-      stitchImage: data.stretch?.stitchImage || null,
-      
-      kameezBustCircumference: data.stretch?.kameez?.bustCircumference || null,
-      kameezWaistCircumference: data.stretch?.kameez?.waistCircumference || null,
-      kameezHipCircumference: data.stretch?.kameez?.hipCircumference || null,
-      kameezShoulderWidth: data.stretch?.kameez?.shoulderWidth || null,
-      kameezLength: data.stretch?.kameez?.kameezLength || null,
-      kameezSleeveLength: data.stretch?.kameez?.sleeveLength || null,
-      kameezArmholeCircumference: data.stretch?.kameez?.armholeCircumference || null,
-      kameezBicepCircumference: data.stretch?.kameez?.bicepCircumference || null,
-      kameezNeckCircumference: data.stretch?.kameez?.neckCircumference || null,
-      kameezFrontNeckDepth: data.stretch?.kameez?.frontNeckDepth || null,
-      kameezShoulderToWaistLength: data.stretch?.kameez?.shoulderToWaistLength || null,
-      kameezSleeveOpeningCircumference: data.stretch?.kameez?.sleeveOpeningCircumference || null,
-    
-      shalwarWaistCircumference: data.stretch?.shalwar?.waistCircumference || null,
-      shalwarHipCircumference: data.stretch?.shalwar?.hipCircumference || null,
-      shalwarThighCircumference: data.stretch?.shalwar?.thighCircumference || null,
-      shalwarInseamLength: data.stretch?.shalwar?.inseamLength || null,
-      shalwarOutseamLength: data.stretch?.shalwar?.outseamLength || null,
-      shalwarAnkleOpening: data.stretch?.shalwar?.ankleOpening || null,
-      shalwarRise: data.stretch?.shalwar?.rise || null,
-      shalwarCrotchDepth: data.stretch?.shalwar?.crotchDepth || null,
-    
-      kameezFit: data.stretch?.fitPreferences?.kameezFit || null,
-      sleeveStyle: data.stretch?.fitPreferences?.sleeveStyle || null,
-      pantStyle: data.stretch?.fitPreferences?.pantStyle || null,
-      necklineStyle: data.stretch?.fitPreferences?.necklineStyle || null,
+      products: products, 
+      stretchData: stretchData
     };
-    
 
     const result = await billingDetailModel.create(billingDetailData);
 
@@ -163,7 +139,7 @@ const billingDetail = async (req, res) => {
 
 const getAllBillingDetails = async (req, res) => {
   try {
-    const billingDetails = await billingDetailModel.find();
+    const billingDetails = await billingDetailModel.find().populate('stretchData');
     res.status(200).json({ message: 'Billing details fetched successfully.', billingDetails });
   } catch (err) {
     console.log(err);
@@ -172,10 +148,9 @@ const getAllBillingDetails = async (req, res) => {
 };
 const updateBillingDetail = async (req, res) => {
   try {
-    const { id } = req.params;  // Billing detail ID
+    const { id } = req.params; 
     let updateData = req.body;
 
-    // If there are uploaded images, process them
     if (req.files && req.files.cashOnDeliveryImage) {
       const cashOnDeliveryImageFile = req.files.cashOnDeliveryImage[0];
       const cashOnDeliveryResult = await cloudinary.uploader.upload(cashOnDeliveryImageFile.path);
@@ -190,14 +165,14 @@ const updateBillingDetail = async (req, res) => {
 
     if (updateData.isStitching === 'true' || updateData.isStitching === true) {
       if (typeof updateData.stretchData === 'string') {
-        updateData.stretchData = JSON.parse(updateData.stretchData); // Parse stitching data if it is in string format
+        updateData.stretchData = JSON.parse(updateData.stretchData); 
       }
 
       if (updateData.stretchData && updateData.stretchData._id) {
         await StretchModel.findByIdAndUpdate(updateData.stretchData._id, updateData.stretchData);
       } else {
         const newStretchData = await StretchModel.create(updateData.stretchData);
-        updateData.stretchData = newStretchData._id; // Save reference to the new stitching data
+        updateData.stretchData = newStretchData._id; 
       }
     }
 

@@ -13,7 +13,7 @@ const stretchSchema = new mongoose.Schema({
         type: Number,
         required: false,
     },
-    image: {
+    stitchImage: {
         type: String, 
         required: false,
     },

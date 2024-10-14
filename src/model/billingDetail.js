@@ -1,5 +1,6 @@
-// models/BillingDetail.js
 const mongoose = require("mongoose");
+const StretchModel = require('./stratchModel'); // Import the Stretch model
+
 
 const billingSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
@@ -36,56 +37,16 @@ const billingSchema = new mongoose.Schema({
   }],
   orderCount: { type: Number },
 
-  isStitching: { type: Boolean, default: false },
-  stitchingImage:{type: String, required: false},
-  customerName: { type: String, required: false },
-  height: { type: Number, required: false },
-  weight: { type: Number, required: false },
-  stitchImage: { type: String, required: false }, 
-
-  kameezBustCircumference: { type: Number, required: false },
-  kameezWaistCircumference: { type: Number, required: false },
-  kameezHipCircumference: { type: Number, required: false },
-  kameezShoulderWidth: { type: Number, required: false },
-  kameezLength: { type: Number, required: false },
-  kameezSleeveLength: { type: Number, required: false },
-  kameezArmholeCircumference: { type: Number, required: false },
-  kameezBicepCircumference: { type: Number, required: false },
-  kameezNeckCircumference: { type: Number, required: false },
-  kameezFrontNeckDepth: { type: Number, required: false },
-  kameezShoulderToWaistLength: { type: Number, required: false },
-  kameezSleeveOpeningCircumference: { type: Number, required: false },
-
-  shalwarWaistCircumference: { type: Number, required: false },
-  shalwarHipCircumference: { type: Number, required: false },
-  shalwarThighCircumference: { type: Number, required: false },
-  shalwarInseamLength: { type: Number, required: false },
-  shalwarOutseamLength: { type: Number, required: false },
-  shalwarAnkleOpening: { type: Number, required: false },
-  shalwarRise: { type: Number, required: false },
-  shalwarCrotchDepth: { type: Number, required: false },
-
-  kameezFit: { 
-    type: String, 
-    enum: ['fitted', 'semi-fitted', 'loose', ''], 
-    required: false 
-  },
-  sleeveStyle: { 
-    type: String, 
-    enum: ['full', 'three-quarter', 'half', 'sleeveless', ''], 
-    required: false 
-  },
-  pantStyle: { 
-    type: String, 
-    enum: ['traditional', 'churidar', 'straight-cut', ''], 
-    required: false 
-  },
-  necklineStyle: { 
-    type: String, 
-    enum: ['v-neck', 'round neck', 'boat neck', 'custom', ''], 
-    required: false 
-  },
+  isStitching:{
+     type: Boolean, default: false
+    },
+    stretchData: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: 'StretchData',  // Referencing the StretchModel
+      required: false 
+    }
 });
+
 
 billingSchema.methods.updateOrderStatus = function (newStatus) {
   this.orderStatus = newStatus;
@@ -94,3 +55,5 @@ billingSchema.methods.updateOrderStatus = function (newStatus) {
 };
 
 module.exports = mongoose.model("BillingDetail", billingSchema);
+
+
