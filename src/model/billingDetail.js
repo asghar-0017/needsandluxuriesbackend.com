@@ -21,6 +21,8 @@ const billingSchema = new mongoose.Schema({
     quantity: { type: Number, required: true },
     price: { type: Number },
     Imageurl: { type: String },
+    isStitched:{ type:Boolean},
+    stitchedPrice:{ type:Number},
   }],
   orderStatus: {
     type: String,

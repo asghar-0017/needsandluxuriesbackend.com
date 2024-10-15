@@ -130,14 +130,23 @@ const updateBillingDetail = async (req, res) => {
 
 const deleteBillingDetail = async (req, res) => {
   try {
-    const { id } = req.params;
-    await sendDataInService.deleteBillingDetail(id);
-    res.status(200).json({ message: 'Billing detail deleted successfully.' });
+    const { orderId } = req.params; 
+    const billingDetail = await billingDetailModel.findOne({ orderId }).populate('stretchData');
+    if (!billingDetail) {
+      return res.status(404).json({ message: 'Billing detail not found.' });
+    }
+    if (billingDetail.stretchData) {
+      await stretchDataModel.findByIdAndDelete(billingDetail.stretchData._id);
+    }
+    await billingDetailModel.findByIdAndDelete(billingDetail._id);
+    res.status(200).json({ message: 'Billing detail and associated stretch data deleted successfully.' });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: 'Internal Server Error.' });
   }
 };
+
+
 
 const changeOrderStatus = async (req, res) => {
   try {

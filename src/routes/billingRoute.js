@@ -14,7 +14,7 @@ const billingRoute = (app) => {
   billingDetail);
   app.get("/billing-details", getAllBillingDetails);
   app.put("/billing-details/:orderId", upload.fields([{ name: 'cashOnDeliveryImage', maxCount: 1 }, { name: 'stitchImage', maxCount: 1 }]), updateBillingDetail);
-  app.delete("/billing-details/:id", deleteBillingDetail);
+  app.delete("/billing-details/:orderId", deleteBillingDetail);
   app.put("/billing-status/:id", changeOrderStatus);
   app.get("/order-status-counts", orderStatusCounts); 
   app.get('/get-order-by-orderId/:orderId',getOrderByOrderId)
