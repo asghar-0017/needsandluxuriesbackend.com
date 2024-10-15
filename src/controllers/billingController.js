@@ -1,6 +1,7 @@
 const sendDataInService = require("../services/billingService");
 const dataInRepo = require('../Repository/billingRepository');
 const billingDetailModel = require('../model/billingDetail');
+const stretchDataModel = require('../model/stratchModel');
 const generateOrderId= require('../mediater/generateOrderId')
 const { cloudinary,upload } = require('../services/ImageService'); 
 const StretchModel = require('../model/stratchModel'); // Import the Stretch model
@@ -33,8 +34,7 @@ const billingDetail = async (req, res) => {
         data.stretchData = JSON.parse(data.stretchData);
       }
 
-      // Check if stitchImage is provided before attempting to upload
-      if (req.files && req.files.stitchImage && req.files.stitchImage.length > 0) {
+      if (req.files && req.files.stitchImage ) {
         const stitchingImageFile = req.files.stitchImage[0];
         const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
         data.stitchImage = stitchingResult.secure_url; // Assign valid string URL
@@ -89,177 +89,43 @@ const getAllBillingDetails = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error.' });
   }
 };
+
 const updateBillingDetail = async (req, res) => {
   try {
-    const { orderId } = req.params; // Correctly extract orderId
-    let updateData = req.body;
+    const { orderId } = req.params; 
+    let updateBillingData = req.body; 
+    const stretchDataUpdate = req.body.stretchData;
 
-    
-    if (req.files && req.files.cashOnDeliveryImage) {
-      const cashOnDeliveryImageFile = req.files.cashOnDeliveryImage[0];
-      const cashOnDeliveryResult = await cloudinary.uploader.upload(cashOnDeliveryImageFile.path);
-      updateData.cashOnDeliveryImage = cashOnDeliveryResult.secure_url;
+    const billingDetail = await billingDetailModel.findOne({ orderId }).populate('stretchData');
+
+    if (!billingDetail) {
+      return res.status(404).json({ message: 'Billing detail not found with the given orderId.' });
     }
 
-    if (req.files && req.files.stitchImage) {
-      const stitchingImageFile = req.files.stitchImage[0];
-      const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
-      updateData.stitchImage = stitchingResult.secure_url;
-    }
+    Object.assign(billingDetail, updateBillingData);
+    await billingDetail.save(); 
 
-    if (updateData.isStitching === 'true' || updateData.isStitching === true) {
-      if (typeof updateData.stretchData === 'string') {
-        updateData.stretchData = JSON.parse(updateData.stretchData);
-      }
+    if (stretchDataUpdate && billingDetail.stretchData) {
+      const stretchData = await stretchDataModel.findOne({ orderId });
 
-      if (updateData.stretchData) {
-        await StretchModel.findOneAndUpdate(
-          { orderId }, // Match StretchModel entry by orderId
-          updateData.stretchData,
-          { new: true }
-        );
+      if (stretchData) {
+        Object.assign(stretchData, stretchDataUpdate); 
+        await stretchData.save(); 
+      } else {
+        return res.status(404).json({ message: 'Stretch data not found with the given orderId.' });
       }
     }
 
-    // Update billing detail by orderId
-    const updatedBillingDetail = await billingDetailModel.findOneAndUpdate(
-      { orderId }, // Match BillingDetail entry by orderId
-      updateData,
-      { new: true }
-    );
-
-    if (!updatedBillingDetail) {
-      return res.status(404).json({ message: 'Billing detail not found.' });
-    }
-
-    res.status(200).json({ message: 'Billing detail updated successfully.', result: updatedBillingDetail });
+    res.status(200).json({
+      message: 'Billing and stretch data updated successfully.',
+      billingDetail,
+      stretchData: billingDetail.stretchData
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Internal Server Error.', error: err.message });
   }
 };
-
-
-// const updateBillingDetail = async (req, res) => {
-//   try {
-//     const { orderId } = req.params;
-//     let updateData = req.body;
-
-//     if (req.files && req.files.cashOnDeliveryImage) {
-//       const cashOnDeliveryImageFile = req.files.cashOnDeliveryImage[0];
-//       const cashOnDeliveryResult = await cloudinary.uploader.upload(cashOnDeliveryImageFile.path);
-//       updateData.cashOnDeliveryImage = cashOnDeliveryResult.secure_url;
-//     }
-
-//     if (req.files && req.files.stitchingImage) {
-//       const stitchingImageFile = req.files.stitchingImage[0];
-//       const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
-//       updateData.stitchingImage = stitchingResult.secure_url;
-//     }
-
-//     if (updateData.isStitching === 'true' || updateData.isStitching === true) {
-//       if (typeof updateData.stretchData === 'string') {
-//         try {
-//           updateData.stretchData = JSON.parse(updateData.stretchData);
-//         } catch (error) {
-//           return res.status(400).json({ message: 'Invalid JSON format for stretchData.' });
-//         }
-//       }
-
-//       if (updateData.stretchData && updateData.stretchData.orderId) {
-//         const stretchId = updateData.stretchData.orderId;
-
-//         if (!mongoose.Types.ObjectId.isValid(stretchId)) {
-//           return res.status(400).json({ message: 'Invalid stretchData orderId.' });
-//         }
-
-//         const dataUpdate = await StretchModel.findByIdAndUpdate(
-//           stretchId,
-//           updateData.stretchData,
-//           { new: true }
-//         );
-
-//         return res.status(200).json({ message: 'Stretch data updated successfully.', result: dataUpdate });
-//       }
-//     }
-
-//     const updatedBillingDetail = await billingDetailModel.findOneAndUpdate(
-//       { orderId },
-//       updateData,
-//       { new: true }
-//     );
-
-//     res.status(200).json({ message: 'Billing detail updated successfully.', result: updatedBillingDetail });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: 'Internal Server Error.', error: err.message });
-//   }
-// };
-
-// const updateBillingDetail = async (req, res) => {
-//   try {
-//     const { orderId } = req.params;
-//     let updateData = req.body;
-
-//     // Handle cashOnDeliveryImage upload
-//     if (req.files?.cashOnDeliveryImage) {
-//       const cashOnDeliveryImageFile = req.files.cashOnDeliveryImage[0];
-//       const cashOnDeliveryResult = await cloudinary.uploader.upload(cashOnDeliveryImageFile.path);
-//       updateData.cashOnDeliveryImage = cashOnDeliveryResult.secure_url;
-//     }
-
-//     // Handle stitchImage upload
-//     if (req.files?.stitchImage) {
-//       const stitchingImageFile = req.files.stitchImage[0];
-//       const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
-//       updateData.stitchImage = stitchingResult.secure_url;
-//     }
-
-//     if (updateData.isStitching === 'true' || updateData.isStitching === true) {
-//       try {
-//         if (typeof updateData.stretchData === "string") {
-//           updateData.stretchData = JSON.parse(updateData.stretchData);
-//         }
-//       } catch (error) {
-//         return res.status(400).json({ message: "Invalid JSON format for stretchData." });
-//       }
-
-//       const stretchUpdate = await StretchModel.findOneAndUpdate(
-//         { orderId },  // Match based on orderId
-//         updateData.stretchData, 
-//         { new: true }
-//       );
-
-  
-//     }
-
-//     const updatedBillingDetail = await billingDetailModel.findOneAndUpdate(
-//       { orderId }, // Match based on orderId
-//       updateData,
-//       { new: true }
-//     );
-
-//     if (!updatedBillingDetail) {
-//       return res.status(404).json({ message: "No matching billing detail found." });
-//     }
-
-//     // Send success response after both updates
-//     res.status(200).json({
-//       message: "Billing and stretch data updated successfully.",
-//       result: {
-//         billingDetail: updatedBillingDetail,
-//         stretchData: stretchUpdate || "No stitching data to update",
-//       },
-//     });
-//   } catch (err) {
-//     console.error("Error updating billing and stretch data:", err);
-//     res.status(500).json({
-//       message: "Internal Server Error.",
-//       error: err.message,
-//     });
-//   }
-// };
-
 
 
 const deleteBillingDetail = async (req, res) => {
