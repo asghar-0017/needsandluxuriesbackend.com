@@ -14,15 +14,13 @@ const billingDetail = async (req, res) => {
     if (typeof products === 'string') {
       products = JSON.parse(products);
     }
-    // if (!data.firstName || !data.lastName || !data.email || !data.address || !data.phone) {
-    //   return res.status(400).json({ message: "Please fill all required fields." });
-    // }
 
     data.cashOnDelivery = data.cashOnDelivery === 'true' || data.cashOnDelivery === true;
     data.isStitching = data.isStitching === 'true' || data.isStitching === true;
-    const orderId= generateOrderId();
-    data.orderId=orderId
+    const orderId = generateOrderId();
+    data.orderId = orderId;
 
+    // Upload cashOnDeliveryImage if present
     if (req.files && req.files.cashOnDeliveryImage) {
       const cashOnDeliveryImageFile = req.files.cashOnDeliveryImage[0];
       const cashOnDeliveryResult = await cloudinary.uploader.upload(cashOnDeliveryImageFile.path);
@@ -35,13 +33,16 @@ const billingDetail = async (req, res) => {
         data.stretchData = JSON.parse(data.stretchData);
       }
 
-      if (req.files && req.files.stitchImage) {
+      // Check if stitchImage is provided before attempting to upload
+      if (req.files && req.files.stitchImage && req.files.stitchImage.length > 0) {
         const stitchingImageFile = req.files.stitchImage[0];
         const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
-        data.stitchImage = stitchingResult.secure_url;
+        data.stitchImage = stitchingResult.secure_url; // Assign valid string URL
+      } else {
+        data.stitchImage = null; // Handle case where no image was uploaded
       }
-      data.stretchData.orderId = orderId;
 
+      data.stretchData.orderId = orderId;
       stretchData = await StretchModel.create(data.stretchData);
     }
 
@@ -58,10 +59,10 @@ const billingDetail = async (req, res) => {
       additionalInformation: data.additionalInformation,
       apartment: data.apartment,
       cashOnDelivery: data.cashOnDelivery,
-      cashOnDeliveryImage:data.cashOnDeliveryImage,
+      cashOnDeliveryImage: data.cashOnDeliveryImage,
       orderId: data.orderId,
       orderCount: data.orderCount,
-      products: products, 
+      products: products,
       stretchData: stretchData
     };
 
@@ -73,6 +74,7 @@ const billingDetail = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error.', error: err.message });
   }
 };
+
 
 
 
