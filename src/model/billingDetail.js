@@ -11,7 +11,7 @@ const billingSchema = new mongoose.Schema({
   phone: { type: Number, required: true },
   email: { type: String, required: true },
   additionalInformation: { type: String },
-  orderId: { type: String },
+  orderId: { type: Number },
   orderDate: { type: Date, default: Date.now },
   cashOnDelivery: { type: Boolean, default: true },
   cashOnDeliveryImage: { type: String },

@@ -89,9 +89,10 @@ const getAllBillingDetails = async (req, res) => {
 };
 const updateBillingDetail = async (req, res) => {
   try {
-    const { orderId } = req.params.orderId; 
+    const { orderId } = req.params; // Correctly extract orderId
     let updateData = req.body;
 
+    
     if (req.files && req.files.cashOnDeliveryImage) {
       const cashOnDeliveryImageFile = req.files.cashOnDeliveryImage[0];
       const cashOnDeliveryResult = await cloudinary.uploader.upload(cashOnDeliveryImageFile.path);
@@ -106,23 +107,36 @@ const updateBillingDetail = async (req, res) => {
 
     if (updateData.isStitching === 'true' || updateData.isStitching === true) {
       if (typeof updateData.stretchData === 'string') {
-        updateData.stretchData = JSON.parse(updateData.stretchData); 
+        updateData.stretchData = JSON.parse(updateData.stretchData);
       }
 
-      if (updateData.stretchData && updateData.stretchData.orderId) {
-       const dataUpdate=  await StretchModel.findByIdAndUpdate(updateData.stretchData.orderId, updateData.stretchData);
-       return dataUpdate
-      } 
+      if (updateData.stretchData) {
+        await StretchModel.findOneAndUpdate(
+          { orderId }, // Match StretchModel entry by orderId
+          updateData.stretchData,
+          { new: true }
+        );
+      }
     }
 
-    const updatedBillingDetail = await billingDetailModel.findByIdAndUpdate(orderId, updateData, { new: true });
+    // Update billing detail by orderId
+    const updatedBillingDetail = await billingDetailModel.findOneAndUpdate(
+      { orderId }, // Match BillingDetail entry by orderId
+      updateData,
+      { new: true }
+    );
+
+    if (!updatedBillingDetail) {
+      return res.status(404).json({ message: 'Billing detail not found.' });
+    }
 
     res.status(200).json({ message: 'Billing detail updated successfully.', result: updatedBillingDetail });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: 'Internal Server Error.', error: err.message });
   }
 };
+
 
 // const updateBillingDetail = async (req, res) => {
 //   try {

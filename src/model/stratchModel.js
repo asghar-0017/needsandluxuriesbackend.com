@@ -5,7 +5,7 @@ const stretchSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
-    orderId: { type: String },
+    orderId: { type: Number },
     height: {
         type: Number,
         required: false,
