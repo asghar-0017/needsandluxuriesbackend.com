@@ -20,7 +20,8 @@ const billingDetail = async (req, res) => {
 
     data.cashOnDelivery = data.cashOnDelivery === 'true' || data.cashOnDelivery === true;
     data.isStitching = data.isStitching === 'true' || data.isStitching === true;
-    data.orderId = generateOrderId();
+    const orderId= generateOrderId();
+    data.orderId=orderId
 
     if (req.files && req.files.cashOnDeliveryImage) {
       const cashOnDeliveryImageFile = req.files.cashOnDeliveryImage[0];
@@ -39,7 +40,7 @@ const billingDetail = async (req, res) => {
         const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
         data.stitchImage = stitchingResult.secure_url;
       }
-      stretchData.orderId=data.orderId
+      data.stretchData.orderId = orderId;
 
       stretchData = await StretchModel.create(data.stretchData);
     }
