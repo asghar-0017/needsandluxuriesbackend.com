@@ -33,15 +33,14 @@ const billingDetail = async (req, res) => {
       if (typeof data.stretchData === 'string') {
         data.stretchData = JSON.parse(data.stretchData);
       }
-
       if (req.files && req.files.stitchImage ) {
-        const stitchingImageFile = req.files.stitchImage[0];
+        const stitchingImageFile = req.files.stitchImage;
         const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
-        data.stitchImage = stitchingResult.secure_url; // Assign valid string URL
+        data.stitchImage = stitchingResult.secure_url; 
       } else {
-        data.stitchImage = null; // Handle case where no image was uploaded
-      }
-
+        data.stitchImage = null; 
+      
+    }
       data.stretchData.orderId = orderId;
       stretchData = await StretchModel.create(data.stretchData);
     }
