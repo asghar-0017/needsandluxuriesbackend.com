@@ -14,9 +14,11 @@ const stretchSchema = new mongoose.Schema({
         type: Number,
         required: false,
     },
+    isStitching:{
+        type: Boolean, default: false
+       },
     stitchImage: {
         type: String, 
-        required: false,
     },
     kameez: {
         bustCircumference: {

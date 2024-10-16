@@ -11,13 +11,15 @@ const StretchModel = require('../model/stratchModel'); // Import the Stretch mod
 const billingDetail = async (req, res) => {
   try {
     const data = req.body;
+    console.log("Data",data.stretchData)
+
     let products = req.body.products;
     if (typeof products === 'string') {
       products = JSON.parse(products);
     }
 
     data.cashOnDelivery = data.cashOnDelivery === 'true' || data.cashOnDelivery === true;
-    data.isStitching = data.isStitching === 'true' || data.isStitching === true;
+    data.stretchData.isStitching = Boolean(data.stretchData.isStitching === 'true' || data.stretchData.isStitching === true);
     const orderId = generateOrderId();
     data.orderId = orderId;
 
@@ -27,10 +29,12 @@ const billingDetail = async (req, res) => {
       const cashOnDeliveryResult = await cloudinary.uploader.upload(cashOnDeliveryImageFile.path);
       data.cashOnDeliveryImage = cashOnDeliveryResult.secure_url;
     }
-
     let stretchData;
-    if (data.isStitching) {
+
+
+    if (data.stretchData.isStitching) {
       if (typeof data.stretchData === 'string') {
+        console.log("Streched Data",data.stretchData)
         data.stretchData = JSON.parse(data.stretchData);
       }
       if (req.files && req.files.stitchImage ) {
@@ -44,9 +48,10 @@ const billingDetail = async (req, res) => {
       data.stretchData.orderId = orderId;
       stretchData = await StretchModel.create(data.stretchData);
     }
-
+  
     const previousOrderCount = await billingDetailModel.countDocuments();
     data.orderCount = previousOrderCount + 1;
+
 
     const billingDetailData = {
       firstName: data.firstName,

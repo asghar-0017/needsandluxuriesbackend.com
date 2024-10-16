@@ -39,9 +39,7 @@ const billingSchema = new mongoose.Schema({
   }],
   orderCount: { type: Number },
 
-  isStitching:{
-     type: Boolean, default: false
-    },
+
     stretchData: { 
       type: mongoose.Schema.Types.ObjectId, 
       ref: 'StretchData',  // Referencing the StretchModel
