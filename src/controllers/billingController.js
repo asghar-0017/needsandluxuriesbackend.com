@@ -37,14 +37,13 @@ const billingDetail = async (req, res) => {
         console.log("Streched Data",data.stretchData)
         data.stretchData = JSON.parse(data.stretchData);
       }
-      if (req.files && req.files.stitchImage ) {
-        const stitchingImageFile = req.files.stitchImage;
+      if (req.files && req.files.stitchImage) {
+        const stitchingImageFile = req.files.stitchImage[0];
         const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
-        data.stitchImage = stitchingResult.secure_url; 
+        data.stitchImage = stitchingResult.secure_url;
       } else {
-        data.stitchImage = null; 
-      
-    }
+        data.stitchImage = null;
+      }
       data.stretchData.orderId = orderId;
       stretchData = await StretchModel.create(data.stretchData);
     }
