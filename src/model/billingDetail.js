@@ -24,6 +24,12 @@ const billingSchema = new mongoose.Schema({
     isStitched:{ type:Boolean},
     stitchedPrice:{ type:Number},
   }],
+  isStitching:{
+    type: Boolean, default: false
+   },
+stitchImage: {
+    type: String, 
+},
   orderStatus: {
     type: String,
     enum: ['Pending', 'Dispatched', 'Cancelled'],

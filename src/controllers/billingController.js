@@ -19,7 +19,7 @@ const billingDetail = async (req, res) => {
     }
 
     data.cashOnDelivery = data.cashOnDelivery === 'true' || data.cashOnDelivery === true;
-    data.stretchData.isStitching = Boolean(data.stretchData.isStitching === 'true' || data.stretchData.isStitching === true);
+    data.isStitching = Boolean(data.isStitching === 'true' || data.isStitching === true);
     const orderId = generateOrderId();
     data.orderId = orderId;
 
@@ -29,21 +29,19 @@ const billingDetail = async (req, res) => {
       const cashOnDeliveryResult = await cloudinary.uploader.upload(cashOnDeliveryImageFile.path);
       data.cashOnDeliveryImage = cashOnDeliveryResult.secure_url;
     }
+
+    if (req.files && req.files.stitchImage) {
+      const stitchingImageFile = req.files.stitchImage[0];
+      const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
+      data.stitchImage = stitchingResult.secure_url;
+    } 
     let stretchData;
-
-
-    if (data.stretchData.isStitching) {
+    if (data.isStitching) {
       if (typeof data.stretchData === 'string') {
         console.log("Streched Data",data.stretchData)
         data.stretchData = JSON.parse(data.stretchData);
       }
-      if (req.files && req.files.stitchImage) {
-        const stitchingImageFile = req.files.stitchImage[0];
-        const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
-        data.stretchData.stitchImage = stitchingResult.secure_url;
-      } else {
-        data.stretchData.stitchImage = null;
-      }
+      
       data.stretchData.orderId = orderId;
       stretchData = await StretchModel.create(data.stretchData);
     }
@@ -53,6 +51,8 @@ const billingDetail = async (req, res) => {
 
 
     const billingDetailData = {
+      isStitching:data.isStitching,
+      stitchImage:data.stitchImage,
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
@@ -65,6 +65,7 @@ const billingDetail = async (req, res) => {
       cashOnDeliveryImage: data.cashOnDeliveryImage,
       orderId: data.orderId,
       orderCount: data.orderCount,
+ 
       products: products,
       stretchData: stretchData
     };
