@@ -11,7 +11,7 @@ const StretchModel = require('../model/stratchModel'); // Import the Stretch mod
 const billingDetail = async (req, res) => {
   try {
     const data = req.body;
-    console.log("Data",data.stitchImage)
+    console.log("Data",data.stretchData)
 
     let products = req.body.products;
     if (typeof products === 'string') {
@@ -19,7 +19,7 @@ const billingDetail = async (req, res) => {
     }
 
     data.cashOnDelivery = data.cashOnDelivery === 'true' || data.cashOnDelivery === true;
-    // data.stretchData.isStitching = Boolean(data.stretchData.isStitching === 'true' || data.stretchData.isStitching === true);
+    data.stretchData.isStitching = Boolean(data.stretchData.isStitching === 'true' || data.stretchData.isStitching === true);
     const orderId = generateOrderId();
     data.orderId = orderId;
 
@@ -32,26 +32,27 @@ const billingDetail = async (req, res) => {
     let stretchData;
 
 
-    // if (data.stretchData.isStitching) {
-      // if (typeof data.stretchData === 'string') {
-      //   data.stretchData = JSON.parse(data.stretchData);
-      // }
+    if (data.stretchData.isStitching) {
+      if (typeof data.stretchData === 'string') {
+        console.log("Streched Data",data.stretchData)
+        data.stretchData = JSON.parse(data.stretchData);
+      }
       if (req.files && req.files.stitchImage) {
         const stitchingImageFile = req.files.stitchImage[0];
         const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
-        data.stitchImage = stitchingResult.secure_url;
-        data.stretchData.stitchImage=data.stitchImage
+        data.stretchData.stitchImage = stitchingResult.secure_url;
+      } else {
+        data.stretchData.stitchImage = null;
       }
       data.stretchData.orderId = orderId;
       stretchData = await StretchModel.create(data.stretchData);
-    // }
+    }
   
     const previousOrderCount = await billingDetailModel.countDocuments();
     data.orderCount = previousOrderCount + 1;
 
 
     const billingDetailData = {
-      stitchImage:stretchData.stitchImage,
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
@@ -65,7 +66,7 @@ const billingDetail = async (req, res) => {
       orderId: data.orderId,
       orderCount: data.orderCount,
       products: products,
-      stretchData: stretchData,
+      stretchData: stretchData
     };
 
     const result = await billingDetailModel.create(billingDetailData);
