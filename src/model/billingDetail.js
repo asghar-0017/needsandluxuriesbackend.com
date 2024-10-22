@@ -1,6 +1,4 @@
 const mongoose = require("mongoose");
-const StretchModel = require('./stratchModel'); // Import the Stretch model
-
 
 const billingSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
@@ -15,44 +13,74 @@ const billingSchema = new mongoose.Schema({
   orderDate: { type: Date, default: Date.now },
   cashOnDelivery: { type: Boolean, default: true },
   cashOnDeliveryImage: { type: String },
-  products: [{
-    productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
-    title: { type: String },
-    quantity: { type: Number, required: true },
-    price: { type: Number },
-    Imageurl: { type: String },
-    isStitched:{ type:Boolean},
-    stitchedPrice:{ type:Number},
-  }],
-  isStitching:{
-    type: Boolean, default: false
-   },
-stitchImage: {
-    type: String, 
-},
+  products: [
+    {
+      productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+      title: { type: String },
+      quantity: { type: Number, required: true },
+      price: { type: Number },
+      Imageurl: { type: String },
+      stitchedPrice: { type: Number },
+      isStitching: { type: Boolean, default: false },
+      stitchImage: { type: String },
+      stretchData: [
+        {
+          customerName: { type: String, required: true },
+          orderId: { type: Number },
+          height: { type: Number, required: true },
+          weight: { type: Number, required: true },
+          kameez: {
+            bustCircumference: { type: Number, required: true },
+            waistCircumference: { type: Number, required: true },
+            hipCircumference: { type: Number, required: true },
+          },
+          shalwar: {
+            waistCircumference: { type: Number, required: true },
+            hipCircumference: { type: Number, required: true },
+          },
+          fitPreferences: {
+            kameezFit: {
+              type: String,
+              enum: ["fitted", "semi-fitted", "loose"],
+              required: true,
+            },
+            sleeveStyle: {
+              type: String,
+              enum: ["full", "three-quarter", "half", "sleeveless"],
+              required: true,
+            },
+            pantStyle: {
+              type: String,
+              enum: ["traditional", "churidar", "straight-cut"],
+              required: true,
+            },
+            necklineStyle: {
+              type: String,
+              enum: ["v-neck", "round neck", "boat neck", "custom"],
+              required: true,
+            },
+          },
+        },
+      ],
+    },
+  ],
   orderStatus: {
     type: String,
-    enum: ['Pending', 'Dispatched', 'Cancelled'],
-    default: 'Pending',
+    enum: ["Pending", "Dispatched", "Cancelled"],
+    default: "Pending",
   },
-  statusHistory: [{
-    status: {
-      type: String,
-      enum: ['Pending', 'Dispatched', 'Cancelled'],
-      default: 'Pending',
+  statusHistory: [
+    {
+      status: {
+        type: String,
+        enum: ["Pending", "Dispatched", "Cancelled"],
+        default: "Pending",
+      },
+      date: { type: Date, default: Date.now },
     },
-    date: { type: Date, default: Date.now },
-  }],
+  ],
   orderCount: { type: Number },
-
-
-    stretchData: { 
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: 'StretchData',  // Referencing the StretchModel
-      required: false 
-    }
 });
-
 
 billingSchema.methods.updateOrderStatus = function (newStatus) {
   this.orderStatus = newStatus;
@@ -61,5 +89,3 @@ billingSchema.methods.updateOrderStatus = function (newStatus) {
 };
 
 module.exports = mongoose.model("BillingDetail", billingSchema);
-
-

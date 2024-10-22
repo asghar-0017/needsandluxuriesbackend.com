@@ -44,7 +44,9 @@ const ProductSchema = new mongoose.Schema({
   },
   stitchedPrice:{
     type:Number
-
+  },
+  stitchImage: {
+    type: String,
   },
   newprice:{
     type:Number
@@ -61,6 +63,7 @@ const ProductSchema = new mongoose.Schema({
   otherInfo:{
     type:String
 },
+
 })
 ProductSchema.statics.validCategories = ['Child', 'Men', 'Women'];
 
