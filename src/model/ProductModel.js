@@ -38,7 +38,7 @@ const ProductSchema = new mongoose.Schema({
   type: String,
 
   },
-  isStitched:{
+  isStitching:{
     type:Boolean
 
   },
