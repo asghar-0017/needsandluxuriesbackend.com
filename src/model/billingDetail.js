@@ -22,13 +22,13 @@ const billingSchema = new mongoose.Schema({
       Imageurl: { type: String },
       stitchedPrice: { type: Number },
       isStitching: { type: Boolean, default: false },
-      stitchImage: { type: String },
+      stitchImage: { type: String ,default: false},
       stretchData: [
         {
-          customerName: { type: String, required: true },
+          customerName: { type: String, required: false },
           orderId: { type: Number },
-          height: { type: Number, required: true },
-          weight: { type: Number, required: true },
+          height: { type: Number, required: false },
+          weight: { type: Number, required: false },
           kameez: {
             bustCircumference: { type: Number, required: false },
             waistCircumference: { type: Number, required: false },
@@ -59,22 +59,22 @@ const billingSchema = new mongoose.Schema({
             kameezFit: {
               type: String,
               enum: ["fitted", "semi-fitted", "loose"],
-              required: true,
+              required: false,
             },
             sleeveStyle: {
               type: String,
               enum: ["full", "three-quarter", "half", "sleeveless"],
-              required: true,
+              required: false,
             },
             pantStyle: {
               type: String,
               enum: ["traditional", "churidar", "straight-cut"],
-              required: true,
+              required: false,
             },
             necklineStyle: {
               type: String,
               enum: ["v-neck", "round neck", "boat neck", "custom"],
-              required: true,
+              required: false,
             },
           },
         },
