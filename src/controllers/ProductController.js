@@ -1,4 +1,7 @@
 const ProductModel = require("../model/ProductModel.js");
+const WatchModel= require('../model/watchModal.js')
+const JacketModel = require('../model/jacketSchema.js')
+
 const { cloudinary, upload } = require("../services/ImageService.js");
 const productUpdatedData=require('../services/productService.js')
 
@@ -26,8 +29,25 @@ const CreateProduct = async (req, res) => {
     if (isStitched === 'true' && stitchedPrice) {
       data.stitchedPrice = stitchedPrice;
     }
+    
+    const { category } = data;
+    let Product;
+    if (category === 'Cloths') {
+      Product = ProductModel;
+    } else if (category === 'Watches') {
+      Product = WatchModel;
+    } else if (category === 'Jackets') {
+      Product = JacketModel;
+    } else {
+      return res.status(400).json({ message: "Invalid category" });
+    }
+   
+    const response = await Product.create(data);
 
-    const response = await ProductModel.create(data);
+    if (category === 'Watches') {
+      response._doc.materials = undefined;
+    }
+
     res.status(201).json({ message: "Product created successfully", response });
   } catch (error) {
     console.error("Error creating product:", error);
@@ -43,6 +63,38 @@ const GetProduct = async (req, res) => {
     res.status(500).json({ message: "Error fetching products", error: error.message });
   }
 };
+
+const GetProductByCollection = async (req, res) => {
+  try {
+    const { category } = req.query;
+
+    let Product;
+    if (category === 'Cloths') {
+      Product = ProductModel;
+    } else if (category === 'Watches') {
+      Product = WatchModel;
+    } else if (category === 'Jackets') {
+      Product = JacketModel;
+    } else {
+      return res.status(400).json({ message: "Invalid category" });
+    }
+
+    const data = await Product.find();
+
+    data.forEach((item)=>{
+      if(item.category==='Watches'){
+        delete item.materials
+      }
+    })
+
+    res.status(200).json({ message: "Products fetched successfully", data });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.status(500).json({ message: "Error fetching products", error: error.message });
+  }
+};
+
+
 
 const GetProductCollection = async (req, res) => {
   try {
@@ -107,4 +159,4 @@ const deleteProduct = async (req, res) => {
 };
 
 module.exports = { CreateProduct, upload, GetProduct, GetOneProduct, productUpdate, 
-  deleteProduct,GetProductCollection  };
+  deleteProduct,GetProductCollection,GetProductByCollection  };

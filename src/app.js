@@ -9,7 +9,7 @@ const ContactRoute = require("./routes/ContactRoute.js")
 const billingRoute=require('./routes/billingRoute.js')
 const AdminAuthRoute=require('./routes/adminAuthRoute.js')
 const stratchRoutes=require('./routes/stratchingRoute.js')
-
+const {logger}= require('../logger.js')
 const app = express();
 const cors = require("cors")
 
@@ -18,7 +18,7 @@ app.use(cors({
   origin: "*",
 }))
 app.use(express.json());
-  app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-encoded data
+  app.use(express.urlencoded({ extended: true })); 
   
   Routes(app);
   ReviewRoute(app);
@@ -42,7 +42,6 @@ app.use(express.json());
         app.listen({port:3001,host:'0.0.0.0'}, () => {
           console.log("Server is running on port 3001");
         });
-        console.log("DB connected");
       })
       .catch((err) => {
         console.log(err);
