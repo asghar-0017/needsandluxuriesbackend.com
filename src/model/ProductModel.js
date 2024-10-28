@@ -85,6 +85,6 @@ const ProductSchema = new mongoose.Schema({
 },
 
 })
-ProductSchema.statics.validCategories = ['Cloths', 'Watches', 'Jackets'];
+ProductSchema.statics.validCategories = ['Clothes', 'Watches', 'Jackets'];
 
 module.exports = ProductModel = mongoose.model("Product",ProductSchema)

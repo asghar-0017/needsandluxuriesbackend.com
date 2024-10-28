@@ -16,7 +16,7 @@ const WatchSchema = new mongoose.Schema({
   stockStatus: { type: String, enum: ['In Stock', 'Out of Stock'], default: 'In Stock', required: false },
   sale: { type: Boolean, required: false },
   newprice: { type: Number, required: false },
-  category: { type: String, enum: ['Cloths', 'Watches', 'Jackets'], required: true }
+  category: { type: String, enum: ['Clothes', 'Watches', 'Jackets'], required: true }
 });
 
 const WatchModel = ProductModel.discriminator("Watch", WatchSchema);

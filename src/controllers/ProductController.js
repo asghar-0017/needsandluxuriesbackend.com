@@ -32,7 +32,7 @@ const CreateProduct = async (req, res) => {
     
     const { category } = data;
     let Product;
-    if (category === 'Cloths') {
+    if (category === 'Clothes') {
       Product = ProductModel;
     } else if (category === 'Watches') {
       Product = WatchModel;
@@ -70,7 +70,7 @@ const GetProductByCollection = async (req, res) => {
     const { category } = req.query;
 
     let Product;
-    if (category === 'Cloths') {
+    if (category === 'Clothes') {
       Product = ProductModel;
     } else if (category === 'Watches') {
       Product = WatchModel;
@@ -102,7 +102,7 @@ const UpdateProductByCollection = async (req, res) => {
 
     // Determine which model to use based on the category
     let Product;
-    if (category === 'Cloths') {
+    if (category === 'Clothes') {
       Product = ProductModel;
     } else if (category === 'Watches') {
       Product = WatchModel;
@@ -164,7 +164,7 @@ const DeleteProductByCollection = async (req, res) => {
     const { category } = req.query;
 
     let Product;
-    if (category === 'Cloths') {
+    if (category === 'Clothes') {
       Product = ProductModel;
     } else if (category === 'Watches') {
       Product = WatchModel;
