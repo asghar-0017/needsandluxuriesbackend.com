@@ -11,7 +11,7 @@ const WatchSchema = new mongoose.Schema({
   description: { type: String, required: false },
   Imageurl: { type: String, required: false },
   Quantity: { type: Number, required: false },
-  discountPrice: { type: Number, required: false },
+  discountprice: { type: Number, required: false },
   size: { type: String, enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL'], required: false },
   stockStatus: { type: String, enum: ['In Stock', 'Out of Stock'], default: 'In Stock', required: false },
   sale: { type: Boolean, required: false },
