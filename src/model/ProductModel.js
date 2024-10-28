@@ -66,7 +66,7 @@ const ProductSchema = new mongoose.Schema({
     type:Number,
     require:false
   },
-  category: { type: String, enum: ['Cloths', 'Watches', 'Jackets'], required: true },
+  category: { type: String, enum: ['Clothes', 'Watches', 'Jackets'], required: true },
   subCategory:{
     type:String,
     require:false
