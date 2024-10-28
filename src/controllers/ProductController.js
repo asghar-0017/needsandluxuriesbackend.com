@@ -55,6 +55,7 @@ const CreateProduct = async (req, res) => {
   }
 };
 
+
 const GetProduct = async (req, res) => {
   try {
     const data = await ProductModel.find();
@@ -93,7 +94,98 @@ const GetProductByCollection = async (req, res) => {
     res.status(500).json({ message: "Error fetching products", error: error.message });
   }
 };
+const UpdateProductByCollection = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedData = req.body;
+    const { category } = updatedData;
 
+    // Determine which model to use based on the category
+    let Product;
+    if (category === 'Cloths') {
+      Product = ProductModel;
+    } else if (category === 'Watches') {
+      Product = WatchModel;
+    } else if (category === 'Jackets') {
+      Product = JacketModel;
+    } else {
+      return res.status(400).json({ message: "Invalid category" });
+    }
+
+    // If there's an uploaded image, process and store it
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      updatedData.Imageurl = result.secure_url;
+    }
+
+    // Convert materials to an array if it's a comma-separated string
+    if (typeof updatedData.materials === 'string') {
+      updatedData.materials = updatedData.materials.split(',').map((material) => material.trim());
+    }
+
+    // Calculate new price if on sale
+    const { price, sale, discountprice, isStitched, stitchedPrice } = updatedData;
+    if (sale === 'true' && discountprice) {
+      const discount = parseFloat(discountprice) / 100;
+      const newPrice = price - (price * discount);
+      updatedData.newprice = newPrice;
+    }
+
+    // Add stitched price if applicable
+    if (isStitched === 'true' && stitchedPrice) {
+      updatedData.stitchedPrice = stitchedPrice;
+    }
+
+    // Find and update the product in the database
+    const product = await Product.findByIdAndUpdate(id, updatedData, { new: true });
+
+    // If product not found, send a 404 error
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Remove materials field for Watches category in the response
+    if (category === 'Watches') {
+      product._doc.materials = undefined;
+    }
+
+    res.status(200).json({ message: "Product updated successfully", data: product });
+  } catch (error) {
+    console.error("Error updating product:", error);
+    res.status(500).json({ message: "Error updating product", error: error.message });
+  }
+};
+
+
+// Delete Product by collection category and ID
+const DeleteProductByCollection = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { category } = req.query;
+
+    let Product;
+    if (category === 'Cloths') {
+      Product = ProductModel;
+    } else if (category === 'Watches') {
+      Product = WatchModel;
+    } else if (category === 'Jackets') {
+      Product = JacketModel;
+    } else {
+      return res.status(400).json({ message: "Invalid category" });
+    }
+
+    const product = await Product.findByIdAndDelete(id);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json({ message: "Product deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    res.status(500).json({ message: "Error deleting product", error: error.message });
+  }
+};
 
 
 const GetProductCollection = async (req, res) => {
@@ -159,4 +251,4 @@ const deleteProduct = async (req, res) => {
 };
 
 module.exports = { CreateProduct, upload, GetProduct, GetOneProduct, productUpdate, 
-  deleteProduct,GetProductCollection,GetProductByCollection  };
+  deleteProduct,GetProductCollection,GetProductByCollection,UpdateProductByCollection,DeleteProductByCollection  };
