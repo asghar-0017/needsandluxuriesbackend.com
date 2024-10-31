@@ -1,4 +1,4 @@
-const { CreateProduct, upload, GetProduct, GetOneProduct,productUpdate,deleteProduct,UpdateProductByCollection,DeleteProductByCollection,GetProductCollection,GetProductByCollection } = require("../controllers/ProductController.js");
+const { CreateProduct, upload, GetProduct, GetOneProduct,productUpdate,deleteProduct,GetProductCategory,UpdateProductByCollection,DeleteProductByCollection,GetProductCollection,GetProductByCollection } = require("../controllers/ProductController.js");
   const Routes = (app) => {
 
     app.post("/create", upload.single("image"), CreateProduct);
@@ -9,11 +9,12 @@ const { CreateProduct, upload, GetProduct, GetOneProduct,productUpdate,deletePro
     app.get("/get-product-by-collection",GetProductByCollection);
     app.get("/get-product/:id",GetOneProduct);
     app.get("/get-product-collection",GetProductCollection);
+    app.get("/get-product-category",GetProductCategory);
 
     app.put("/update-product-by-collection/:id",upload.single("image"),  UpdateProductByCollection);
     app.delete("/delete-product-by-collection/:id", DeleteProductByCollection);
     
-    
+
   };
   
   module.exports = Routes;
