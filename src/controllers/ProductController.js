@@ -79,28 +79,23 @@ const GetProductByCollection = async (req, res) => {
     } else {
       return res.status(400).json({ message: "Invalid category" });
     }
-
-    const data = await Product.find();
-
-    data.forEach((item)=>{
-      if(item.category==='Watches'){
-        delete item.materials
-      }
-    })
-
+    const data = await Product.find({ category }).lean();
+    if (category === 'Watches') {
+      data.forEach(item => delete item.materials);
+    }
     res.status(200).json({ message: "Products fetched successfully", data });
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ message: "Error fetching products", error: error.message });
   }
 };
+
 const UpdateProductByCollection = async (req, res) => {
   try {
     const { id } = req.params;
     const updatedData = req.body;
     const { category } = updatedData;
 
-    // Determine which model to use based on the category
     let Product;
     if (category === 'Clothes') {
       Product = ProductModel;
@@ -112,18 +107,13 @@ const UpdateProductByCollection = async (req, res) => {
       return res.status(400).json({ message: "Invalid category" });
     }
 
-    // If there's an uploaded image, process and store it
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path);
       updatedData.Imageurl = result.secure_url;
     }
-
-    // Convert materials to an array if it's a comma-separated string
     if (typeof updatedData.materials === 'string') {
       updatedData.materials = updatedData.materials.split(',').map((material) => material.trim());
     }
-
-    // Calculate new price if on sale
     const { price, sale, discountprice, isStitched, stitchedPrice } = updatedData;
     if (sale === 'true' && discountprice) {
       const discount = parseFloat(discountprice) / 100;
@@ -131,20 +121,14 @@ const UpdateProductByCollection = async (req, res) => {
       updatedData.newprice = newPrice;
     }
 
-    // Add stitched price if applicable
     if (isStitched === 'true' && stitchedPrice) {
       updatedData.stitchedPrice = stitchedPrice;
     }
 
-    // Find and update the product in the database
     const product = await Product.findByIdAndUpdate(id, updatedData, { new: true });
-
-    // If product not found, send a 404 error
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-
-    // Remove materials field for Watches category in the response
     if (category === 'Watches') {
       product._doc.materials = undefined;
     }
@@ -157,7 +141,6 @@ const UpdateProductByCollection = async (req, res) => {
 };
 
 
-// Delete Product by collection category and ID
 const DeleteProductByCollection = async (req, res) => {
   try {
     const { id } = req.params;
@@ -188,14 +171,32 @@ const DeleteProductByCollection = async (req, res) => {
 };
 
 
+// const GetProductCollection = async (req, res) => {
+//   try {
+//     const collections = await ProductModel.distinct("collection");
+//     res.status(200).json({ message: "Collections fetched successfully", collections });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error fetching collections", error: error.message });
+//   }
+// };
+
+
 const GetProductCollection = async (req, res) => {
   try {
-    const collections = await ProductModel.distinct("collection");
-    res.status(200).json({ message: "Collections fetched successfully", collections });
+    const [watchCategories, clothesCategories] = await Promise.all([
+      WatchModel.distinct("category"),
+      ProductModel.distinct("category"),
+    ]);
+
+    const categories = [...new Set([...watchCategories, ...clothesCategories])];
+
+    res.status(200).json({ message: "Categories fetched successfully", categories });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching collections", error: error.message });
+    res.status(500).json({ message: "Error fetching categories", error: error.message });
   }
 };
+
+
 
 
 

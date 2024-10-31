@@ -12,8 +12,8 @@ const { CreateProduct, upload, GetProduct, GetOneProduct,productUpdate,deletePro
 
     app.put("/update-product-by-collection/:id",upload.single("image"),  UpdateProductByCollection);
     app.delete("/delete-product-by-collection/:id", DeleteProductByCollection);
-
-
+    
+    
   };
   
   module.exports = Routes;
