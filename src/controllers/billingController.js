@@ -142,7 +142,7 @@ const billingDetail = async (req, res) => {
         product.stitchImage = stitchingResult.secure_url;
       }
 
-      if (product.category === "Clothes" && product.isStitching===true) {
+      if (product.category === "Clothes" && product.isStitching===true || product.isStitching==='true') {
         let stretchData = data.stretchData[i];
 
         if (typeof stretchData === "string") {
