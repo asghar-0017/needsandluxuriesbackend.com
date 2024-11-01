@@ -142,7 +142,6 @@ const billingDetail = async (req, res) => {
         product.stitchImage = stitchingResult.secure_url;
       }
 
-      // Only add `stretchData` if the category is "Clothes" and stitching is enabled
       if (product.category === "Clothes" && product.isStitching) {
         let stretchData = data.stretchData[i];
 
@@ -150,10 +149,9 @@ const billingDetail = async (req, res) => {
           stretchData = JSON.parse(stretchData);
         }
 
-        stretchData.orderId = orderId; // Assign `orderId` if needed
+        stretchData.orderId = orderId; 
         product.stretchData = stretchData;
       } else {
-        // If the product is not Clothes or isStitching is false, remove stretchData
         product.stretchData = undefined;
       }
     }
