@@ -23,7 +23,6 @@ const billingSchema = new mongoose.Schema({
       stitchedPrice: { type: Number },
       isStitching: { type: Boolean, default: false },
       stitchImage: { type: String ,default: false},
-      category: { type: String },
       stretchData: [
         {
           customerName: { type: String, required: false },
