@@ -6,6 +6,97 @@ const generateOrderId = require("../mediater/generateOrderId");
 const { cloudinary, upload } = require("../services/ImageService");
 const StretchModel = require("../model/stratchModel"); 
 
+// const billingDetail = async (req, res) => {
+//   try {
+//     const data = req.body;
+//     console.log("Data", data);
+//     let products = req.body.products;
+
+//     if (!data.cashOnDelivery && !data.cashOnDeliveryImage) {
+//       return res.status(400).json({
+//         message:
+//           "Please upload an image if the payment method is not Cash on Delivery.",
+//       });
+//     }
+//     if (typeof products === "string") {
+//       products = JSON.parse(products);
+//     }
+
+//     data.cashOnDelivery =
+//       data.cashOnDelivery === "true" || data.cashOnDelivery === true;
+
+//     const orderId = generateOrderId();
+//     data.orderId = orderId;
+
+//     if (req.files && req.files.cashOnDeliveryImage) {
+//       const cashOnDeliveryImageFile = req.files.cashOnDeliveryImage[0];
+//       const cashOnDeliveryResult = await cloudinary.uploader.upload(
+//         cashOnDeliveryImageFile.path
+//       );
+//       data.cashOnDeliveryImage = cashOnDeliveryResult.secure_url;
+//     }
+
+//     for (let i = 0; i < products.length; i++) {
+//       let product = products[i];
+
+//       product.isStitching = Boolean(
+//         product.isStitching === "true" || product.isStitching === true
+//       );
+
+//       if (product.isStitching && req.files && req.files.stitchImage) {
+//         const stitchingImageFile = req.files.stitchImage[i];
+//         const stitchingResult = await cloudinary.uploader.upload(
+//           stitchingImageFile.path
+//         );
+//         product.stitchImage = stitchingResult.secure_url;
+//       }
+
+//       if (product.category==="Clothes" && product.isStitching) {
+//         let stretchData = data.stretchData[i];
+
+//         if (typeof stretchData === "string") {
+//           stretchData = JSON.parse(stretchData);
+//         }
+
+//         data.stretchData.orderId = orderId;
+
+//         product.stretchData = stretchData;
+//       }
+//     }
+
+//     const previousOrderCount = await billingDetailModel.countDocuments();
+//     data.orderCount = previousOrderCount + 1;
+
+//     const billingDetailData = {
+//       firstName: data.firstName,
+//       lastName: data.lastName,
+//       email: data.email,
+//       address: data.address,
+//       phone: data.phone,
+//       postCode: data.postCode,
+//       additionalInformation: data.additionalInformation,
+//       apartment: data.apartment,
+//       cashOnDelivery: data.cashOnDelivery,
+//       cashOnDeliveryImage: data.cashOnDeliveryImage,
+//       orderId: data.orderId,
+//       orderCount: data.orderCount,
+//       products: products,
+//     };
+
+//     const result = await billingDetailModel.create(billingDetailData);
+
+//     res.status(200).json({
+//       message: "Billing detail created successfully.",
+//       data: result,
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res
+//       .status(500)
+//       .json({ message: "Internal Server Error.", error: err.message });
+//   }
+// };
+
 const billingDetail = async (req, res) => {
   try {
     const data = req.body;
@@ -51,16 +142,19 @@ const billingDetail = async (req, res) => {
         product.stitchImage = stitchingResult.secure_url;
       }
 
-      if (product.category==="Clothes" && product.isStitching) {
+      // Only add `stretchData` if the category is "Clothes" and stitching is enabled
+      if (product.category === "Clothes" && product.isStitching) {
         let stretchData = data.stretchData[i];
 
         if (typeof stretchData === "string") {
           stretchData = JSON.parse(stretchData);
         }
 
-        data.stretchData.orderId = orderId;
-
+        stretchData.orderId = orderId; // Assign `orderId` if needed
         product.stretchData = stretchData;
+      } else {
+        // If the product is not Clothes or isStitching is false, remove stretchData
+        product.stretchData = undefined;
       }
     }
 
@@ -91,9 +185,7 @@ const billingDetail = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res
-      .status(500)
-      .json({ message: "Internal Server Error.", error: err.message });
+    res.status(500).json({ message: "Internal Server Error.", error: err.message });
   }
 };
 
