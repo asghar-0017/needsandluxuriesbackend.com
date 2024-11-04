@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// StretchData Schema
 const stretchDataSchema = new mongoose.Schema({
   customerName: { type: String },
   orderId: { type: Number },
@@ -34,22 +33,30 @@ const stretchDataSchema = new mongoose.Schema({
     kameezFit: {
       type: String,
       enum: ["fitted", "semi-fitted", "loose"],
+      required:false
     },
     sleeveStyle: {
       type: String,
       enum: ["full", "three-quarter", "half", "sleeveless"],
+      required:false
+
     },
     pantStyle: {
       type: String,
       enum: ["traditional", "churidar", "straight-cut"],
+      required:false
+
     },
     necklineStyle: {
       type: String,
       enum: ["v-neck", "round neck", "boat neck", "custom"],
+      required:false
+
     },
   },
 });
 
+// Product Schema
 const productSchema = new mongoose.Schema({
   productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
   title: { type: String },
@@ -63,6 +70,7 @@ const productSchema = new mongoose.Schema({
   stretchData: [stretchDataSchema],
 });
 
+// Billing Schema
 const billingSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -95,6 +103,7 @@ const billingSchema = new mongoose.Schema({
   orderCount: { type: Number },
 });
 
+// Convert productId to ObjectId if necessary
 billingSchema.methods.prepareProducts = function () {
   this.products.forEach((product) => {
     if (typeof product.productId === 'string' && mongoose.Types.ObjectId.isValid(product.productId)) {

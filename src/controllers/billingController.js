@@ -193,6 +193,9 @@ const billingDetail = async (req, res) => {
 const getAllBillingDetails = async (req, res) => {
   try {
     const result = await billingDetailModel.find();
+    if(result.isStitching===false ){
+      delete stretchData
+    }
     res
       .status(200)
       .json({ message: "Billing details fetched successfully.", result });
