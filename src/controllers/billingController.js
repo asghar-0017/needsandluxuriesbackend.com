@@ -102,13 +102,13 @@ const billingDetail = async (req, res) => {
     const data = req.body;
     let products = data.products;
 
-    // if (typeof products === "string") {
-    //   try {
-    //     products = JSON.parse(products);
-    //   } catch (err) {
-    //     return res.status(400).json({ message: "Invalid JSON format in products field." });
-    //   }
-    // }
+    if (typeof products === "string") {
+      try {
+        products = JSON.parse(products);
+      } catch (err) {
+        return res.status(400).json({ message: "Invalid JSON format in products field." });
+      }
+    }
 
     data.cashOnDelivery = data.cashOnDelivery === "true" || data.cashOnDelivery === true;
     const orderId = generateOrderId();
