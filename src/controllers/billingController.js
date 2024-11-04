@@ -97,47 +97,159 @@ const StretchModel = require("../model/stratchModel");
 //   }
 // };
 
+// const billingDetail = async (req, res) => {
+//   try {
+//     const data = req.body;
+//     let products = data.products;
+
+//     if (typeof products === "string") {
+//       try {
+//         products = JSON.parse(products);
+//       } catch (err) {
+//         return res.status(400).json({ message: "Invalid JSON format in products field." });
+//       }
+//     }
+
+//     data.cashOnDelivery = data.cashOnDelivery === "true" || data.cashOnDelivery === true;
+//     const orderId = generateOrderId();
+//     data.orderId = orderId;
+
+//     if (req.files && req.files.cashOnDeliveryImage) {
+//       const cashOnDeliveryImageFile = req.files.cashOnDeliveryImage[0];
+//       const cashOnDeliveryResult = await cloudinary.uploader.upload(cashOnDeliveryImageFile.path);
+//       data.cashOnDeliveryImage = cashOnDeliveryResult.secure_url;
+//     }
+
+//     for (let i = 0; i < products.length; i++) {
+//       let product = products[i];
+//       product.isStitching = product.isStitching === "true" || product.isStitching === true;
+    
+//       if (product.isStitching && req.files && req.files.stitchImage && req.files.stitchImage[i]) {
+//         const stitchingImageFile = req.files.stitchImage[i];
+//         const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
+//         product.stitchImage = stitchingResult.secure_url;
+//       }
+    
+//       console.log("Category", product.category);
+    
+//       if (product.category === "Clothes" && product.isStitching) {
+//         if (product.stretchData) {
+//           try {
+//             product.stretchData = typeof product.stretchData === "string"
+//               ? JSON.parse(product.stretchData)
+//               : product.stretchData;
+    
+//             product.stretchData = Array.isArray(product.stretchData)
+//               ? product.stretchData
+//               : [product.stretchData];
+//           } catch (err) {
+//             return res.status(400).json({ message: "Invalid JSON format in stretchData field." });
+//           }
+//         } else {
+//           product.stretchData = [];
+//           product.stitchedPrice=null
+//         }
+//       } else {
+//         product.stretchData = [];
+//         product.stitchedPrice=null
+
+//       }
+//     }
+    
+
+//     const previousOrderCount = await billingDetailModel.countDocuments();
+//     data.orderCount = previousOrderCount + 1;
+
+//     const billingDetailData = {
+//       firstName: data.firstName,
+//       lastName: data.lastName,
+//       email: data.email,
+//       address: data.address,
+//       phone: data.phone,
+//       postCode: data.postCode,
+//       additionalInformation: data.additionalInformation,
+//       apartment: data.apartment,
+//       cashOnDelivery: data.cashOnDelivery,
+//       cashOnDeliveryImage: data.cashOnDeliveryImage,
+//       orderId: data.orderId,
+//       orderCount: data.orderCount,
+//       products: products,
+//     };
+
+//     const result = await billingDetailModel.create(billingDetailData);
+
+//     res.status(200).json({
+//       message: "Billing detail created successfully.",
+//       data: result,
+//     });
+//   } catch (err) {
+//     console.error(err); 
+//     res.status(500).json({ message: "Internal Server Error.", error: err.message });
+//   }
+// };
+
+
+
 const billingDetail = async (req, res) => {
   try {
     const data = req.body;
     let products = data.products;
 
+    // Parse products if it's a string
+    if (typeof products === "string") {
       try {
         products = JSON.parse(products);
       } catch (err) {
         return res.status(400).json({ message: "Invalid JSON format in products field." });
       }
-    
+    }
 
+    // Convert cashOnDelivery to boolean
     data.cashOnDelivery = data.cashOnDelivery === "true" || data.cashOnDelivery === true;
     const orderId = generateOrderId();
     data.orderId = orderId;
 
+    // Handle cash on delivery image upload
     if (req.files && req.files.cashOnDeliveryImage) {
       const cashOnDeliveryImageFile = req.files.cashOnDeliveryImage[0];
       const cashOnDeliveryResult = await cloudinary.uploader.upload(cashOnDeliveryImageFile.path);
       data.cashOnDeliveryImage = cashOnDeliveryResult.secure_url;
     }
 
+    // Process each product
     for (let i = 0; i < products.length; i++) {
       let product = products[i];
+
+      // Convert isStitching to boolean
       product.isStitching = product.isStitching === "true" || product.isStitching === true;
-    
+
+      // Convert relevant product fields to strings
+      product.productId = String(product.productId);  // Assuming productId exists
+      product.title = String(product.title);
+      product.category = String(product.category);
+      product.quantity = String(product.quantity); // Assuming quantity should be a string
+      product.price = String(product.price); //r Assuming price should be a string
+      product.stitchedPrice = String(product.stitchedPrice); // Assuming price should be a string
+
+
+      // Handle stitching image upload if isStitching
       if (product.isStitching && req.files && req.files.stitchImage && req.files.stitchImage[i]) {
         const stitchingImageFile = req.files.stitchImage[i];
         const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
         product.stitchImage = stitchingResult.secure_url;
       }
-    
+
+      // Log category for debugging
       console.log("Category", product.category);
-    
+
+      // Process stretchData for clothes products
       if (product.category === "Clothes" && product.isStitching) {
         if (product.stretchData) {
           try {
             product.stretchData = typeof product.stretchData === "string"
               ? JSON.parse(product.stretchData)
               : product.stretchData;
-    
+
             product.stretchData = Array.isArray(product.stretchData)
               ? product.stretchData
               : [product.stretchData];
@@ -146,35 +258,36 @@ const billingDetail = async (req, res) => {
           }
         } else {
           product.stretchData = [];
-          product.stitchedPrice=null
+          product.stitchedPrice = null; // Set to null if no stretchData
         }
       } else {
-        product.stretchData = [];
-        product.stitchedPrice=null
-
+        product.stretchData = []; // Reset stretchData if not applicable
+        product.stitchedPrice = null; // Set to null if not applicable
       }
     }
-    
 
+    // Count previous orders to assign orderCount
     const previousOrderCount = await billingDetailModel.countDocuments();
     data.orderCount = previousOrderCount + 1;
 
+    // Create billing detail object
     const billingDetailData = {
       firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      address: data.address,
-      phone: data.phone,
-      postCode: data.postCode,
-      additionalInformation: data.additionalInformation,
-      apartment: data.apartment,
-      cashOnDelivery: data.cashOnDelivery,
-      cashOnDeliveryImage: data.cashOnDeliveryImage,
-      orderId: data.orderId,
-      orderCount: data.orderCount,
-      products: products,
+            lastName: data.lastName,
+            email: data.email,
+            address: data.address,
+            phone: data.phone,
+            postCode: data.postCode,
+            additionalInformation: data.additionalInformation,
+            apartment: data.apartment,
+            cashOnDelivery: data.cashOnDelivery,
+            cashOnDeliveryImage: data.cashOnDeliveryImage,
+            orderId: data.orderId,
+            orderCount: data.orderCount,
+            products: products,
     };
 
+    // Save to the database
     const result = await billingDetailModel.create(billingDetailData);
 
     res.status(200).json({
@@ -182,11 +295,10 @@ const billingDetail = async (req, res) => {
       data: result,
     });
   } catch (err) {
-    console.error(err); 
+    console.error(err); // Log error details
     res.status(500).json({ message: "Internal Server Error.", error: err.message });
   }
 };
-
 
 
 
