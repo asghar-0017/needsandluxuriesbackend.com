@@ -49,6 +49,11 @@ const ProductSchema = new mongoose.Schema({
   require:false
 
   },
+  subCollection:{
+    type: String,
+    require:false
+  
+    },
   isStitching:{
     type:Boolean,
     require:false

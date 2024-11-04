@@ -56,7 +56,6 @@ const stretchDataSchema = new mongoose.Schema({
   },
 });
 
-// Product Schema
 const productSchema = new mongoose.Schema({
   productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
   title: { type: String },
@@ -70,7 +69,6 @@ const productSchema = new mongoose.Schema({
   stretchData: [stretchDataSchema],
 });
 
-// Billing Schema
 const billingSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },

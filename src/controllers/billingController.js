@@ -147,9 +147,12 @@ const billingDetail = async (req, res) => {
           }
         } else {
           product.stretchData = [];
+          product.stitchedPrice=null
         }
       } else {
         product.stretchData = [];
+        product.stitchedPrice=null
+
       }
     }
     
