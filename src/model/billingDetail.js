@@ -32,24 +32,24 @@ const stretchDataSchema = new mongoose.Schema({
   fitPreferences: {
     kameezFit: {
       type: String,
-      enum: ["fitted", "semi-fitted", "loose"],
+      enum: ["fitted", "semi-fitted", "loose",""],
       required:false
     },
     sleeveStyle: {
       type: String,
-      enum: ["full", "three-quarter", "half", "sleeveless"],
+      enum: ["full", "three-quarter", "half", "sleeveless",""],
       required:false
 
     },
     pantStyle: {
       type: String,
-      enum: ["traditional", "churidar", "straight-cut"],
+      enum: ["traditional", "churidar", "straight-cut",""],
       required:false
 
     },
     necklineStyle: {
       type: String,
-      enum: ["v-neck", "round neck", "boat neck", "custom"],
+      enum: ["v-neck", "round neck", "boat neck", "custom",""],
       required:false
 
     },
