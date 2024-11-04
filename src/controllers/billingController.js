@@ -135,12 +135,10 @@ const billingDetail = async (req, res) => {
       if (product.category === "Clothes" && product.isStitching) {
         if (product.stretchData) {
           try {
-            // Parse stretchData if it's a string, otherwise leave as it is.
             product.stretchData = typeof product.stretchData === "string"
               ? JSON.parse(product.stretchData)
               : product.stretchData;
     
-            // Ensure stretchData is wrapped in an array as required by the schema.
             product.stretchData = Array.isArray(product.stretchData)
               ? product.stretchData
               : [product.stretchData];
@@ -192,15 +190,20 @@ const billingDetail = async (req, res) => {
 
 const getAllBillingDetails = async (req, res) => {
   try {
-    const result = await billingDetailModel.find();
-    if(result.isStitching===false ){
-      delete stretchData
-    }
-    res
-      .status(200)
-      .json({ message: "Billing details fetched successfully.", result });
+    const result = await billingDetailModel.find().lean();
+
+    result.forEach((order) => {
+      order.products.forEach((product) => {
+        if (product.isStitching === false) {
+          delete product.stretchData; 
+          delete product.Imageurl;
+        }
+      });
+    });
+
+    res.status(200).json({ message: "Billing details fetched successfully.", result });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: "Internal Server Error." });
   }
 };
