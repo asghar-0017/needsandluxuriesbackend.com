@@ -1,5 +1,68 @@
 const mongoose = require("mongoose");
 
+// StretchData Schema
+const stretchDataSchema = new mongoose.Schema({
+  customerName: { type: String },
+  orderId: { type: Number },
+  height: { type: Number },
+  weight: { type: Number },
+  kameez: {
+    bustCircumference: { type: Number },
+    waistCircumference: { type: Number },
+    hipCircumference: { type: Number },
+    shoulderWidth: { type: Number },
+    kameezLength: { type: Number },
+    sleeveLength: { type: Number },
+    armholeCircumference: { type: Number },
+    bicepCircumference: { type: Number },
+    neckCircumference: { type: Number },
+    frontNeckDepth: { type: Number },
+    shoulderToWaistLength: { type: Number },
+    sleeveOpeningCircumference: { type: Number },
+  },
+  shalwar: {
+    waistCircumference: { type: Number },
+    hipCircumference: { type: Number },
+    thighCircumference: { type: Number },
+    inseamLength: { type: Number },
+    outseamLength: { type: Number },
+    ankleOpening: { type: Number },
+    rise: { type: Number },
+    crotchDepth: { type: Number },
+  },
+  fitPreferences: {
+    kameezFit: {
+      type: String,
+      enum: ["fitted", "semi-fitted", "loose"],
+    },
+    sleeveStyle: {
+      type: String,
+      enum: ["full", "three-quarter", "half", "sleeveless"],
+    },
+    pantStyle: {
+      type: String,
+      enum: ["traditional", "churidar", "straight-cut"],
+    },
+    necklineStyle: {
+      type: String,
+      enum: ["v-neck", "round neck", "boat neck", "custom"],
+    },
+  },
+});
+
+const productSchema = new mongoose.Schema({
+  productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+  title: { type: String },
+  quantity: { type: Number, required: true },
+  price: { type: Number },
+  Imageurl: { type: String },
+  stitchedPrice: { type: Number },
+  isStitching: { type: Boolean, default: false },
+  stitchImage: { type: String, default: false },
+  category: { type: String },
+  stretchData: [stretchDataSchema],
+});
+
 const billingSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -13,75 +76,7 @@ const billingSchema = new mongoose.Schema({
   orderDate: { type: Date, default: Date.now },
   cashOnDelivery: { type: Boolean, default: true },
   cashOnDeliveryImage: { type: String },
-  products: [
-    {
-      productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
-      title: { type: String },
-      quantity: { type: Number, required: true },
-      price: { type: Number },
-      Imageurl: { type: String },
-      stitchedPrice: { type: Number },
-      isStitching: { type: Boolean, default: false },
-      stitchImage: { type: String ,default: false},
-      category: { type: String , require:false},
-      stretchData: [
-        {
-          customerName: { type: String, required: false },
-          orderId: { type: Number },
-          height: { type: Number, required: false },
-          weight: { type: Number, required: false },
-          kameez: {
-            bustCircumference: { type: Number, required: false },
-            waistCircumference: { type: Number, required: false },
-            hipCircumference: { type: Number, required: false },
-            shoulderWidth: { type: Number, required: false },
-            hipCircumference: { type: Number, required: false },
-            kameezLength: { type: Number, required: false },
-            sleeveLength: { type: Number, required: false },
-            armholeCircumference: { type: Number, required: false },
-            bicepCircumference: { type: Number, required: false },
-            neckCircumference: { type: Number, required: false },
-            frontNeckDepth: { type: Number, required: false },
-            shoulderToWaistLength: { type: Number, required: false },
-            sleeveOpeningCircumference: { type: Number, required: false },
-            sleeveOpeningCircumference: { type: Number, required: false },
-          },
-          shalwar: {
-            waistCircumference: { type: Number, required: false },
-            hipCircumference: { type: Number, required: false },
-            thighCircumference: { type: Number, required: false },
-            inseamLength: { type: Number, required: false },
-            outseamLength: { type: Number, required: false },
-            ankleOpening: { type: Number, required: false },
-            rise: { type: Number, required: false },
-            crotchDepth: { type: Number, required: false },
-          },
-          fitPreferences: {
-            kameezFit: {
-              type: String,
-              enum: ["fitted", "semi-fitted", "loose"],
-              required: false,
-            },
-            sleeveStyle: {
-              type: String,
-              enum: ["full", "three-quarter", "half", "sleeveless"],
-              required: false,
-            },
-            pantStyle: {
-              type: String,
-              enum: ["traditional", "churidar", "straight-cut"],
-              required: false,
-            },
-            necklineStyle: {
-              type: String,
-              enum: ["v-neck", "round neck", "boat neck", "custom"],
-              required: false,
-            },
-          },
-        },
-      ],
-    },
-  ],
+  products: [productSchema],
   orderStatus: {
     type: String,
     enum: ["Pending", "Dispatched", "Cancelled"],
@@ -100,10 +95,23 @@ const billingSchema = new mongoose.Schema({
   orderCount: { type: Number },
 });
 
-billingSchema.methods.updateOrderStatus = function (newStatus) {
+billingSchema.methods.prepareProducts = function () {
+  this.products.forEach((product) => {
+    if (typeof product.productId === 'string' && mongoose.Types.ObjectId.isValid(product.productId)) {
+      product.productId = mongoose.Types.ObjectId(product.productId);
+    }
+  });
+};
+
+billingSchema.methods.updateOrderStatus = async function (newStatus) {
   this.orderStatus = newStatus;
   this.statusHistory.push({ status: newStatus });
   return this.save();
 };
+
+billingSchema.pre('save', function (next) {
+  this.prepareProducts();
+  next();
+});
 
 module.exports = mongoose.model("BillingDetail", billingSchema);

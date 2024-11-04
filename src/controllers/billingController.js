@@ -100,61 +100,61 @@ const StretchModel = require("../model/stratchModel");
 const billingDetail = async (req, res) => {
   try {
     const data = req.body;
-    console.log("Data", data);
-    let products = req.body.products;
+    let products = data.products;
 
-    if (!data.cashOnDelivery && !data.cashOnDeliveryImage) {
-      return res.status(400).json({
-        message:
-          "Please upload an image if the payment method is not Cash on Delivery.",
-      });
-    }
     if (typeof products === "string") {
-      products = JSON.parse(products);
+      try {
+        products = JSON.parse(products);
+      } catch (err) {
+        return res.status(400).json({ message: "Invalid JSON format in products field." });
+      }
     }
 
-    data.cashOnDelivery =
-      data.cashOnDelivery === "true" || data.cashOnDelivery === true;
-
+    data.cashOnDelivery = data.cashOnDelivery === "true" || data.cashOnDelivery === true;
     const orderId = generateOrderId();
     data.orderId = orderId;
 
     if (req.files && req.files.cashOnDeliveryImage) {
       const cashOnDeliveryImageFile = req.files.cashOnDeliveryImage[0];
-      const cashOnDeliveryResult = await cloudinary.uploader.upload(
-        cashOnDeliveryImageFile.path
-      );
+      const cashOnDeliveryResult = await cloudinary.uploader.upload(cashOnDeliveryImageFile.path);
       data.cashOnDeliveryImage = cashOnDeliveryResult.secure_url;
     }
 
     for (let i = 0; i < products.length; i++) {
       let product = products[i];
-
-      product.isStitching = Boolean(
-        product.isStitching === "true" || product.isStitching === true
-      );
-
-      if (product.isStitching && req.files && req.files.stitchImage) {
+      product.isStitching = product.isStitching === "true" || product.isStitching === true;
+    
+      if (product.isStitching && req.files && req.files.stitchImage && req.files.stitchImage[i]) {
         const stitchingImageFile = req.files.stitchImage[i];
-        const stitchingResult = await cloudinary.uploader.upload(
-          stitchingImageFile.path
-        );
+        const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
         product.stitchImage = stitchingResult.secure_url;
       }
-
-      if (product.category === "Clothes" && product.isStitching===true || product.isStitching==='true') {
-        let stretchData = data.stretchData[i];
-
-        if (typeof stretchData === "string") {
-          stretchData = JSON.parse(stretchData);
+    
+      console.log("Category", product.category);
+    
+      if (product.category === "Clothes" && product.isStitching) {
+        if (product.stretchData) {
+          try {
+            // Parse stretchData if it's a string, otherwise leave as it is.
+            product.stretchData = typeof product.stretchData === "string"
+              ? JSON.parse(product.stretchData)
+              : product.stretchData;
+    
+            // Ensure stretchData is wrapped in an array as required by the schema.
+            product.stretchData = Array.isArray(product.stretchData)
+              ? product.stretchData
+              : [product.stretchData];
+          } catch (err) {
+            return res.status(400).json({ message: "Invalid JSON format in stretchData field." });
+          }
+        } else {
+          product.stretchData = [];
         }
-
-        stretchData.orderId = orderId; 
-        product.stretchData = stretchData;
       } else {
-        product.stretchData = undefined;
+        product.stretchData = [];
       }
     }
+    
 
     const previousOrderCount = await billingDetailModel.countDocuments();
     data.orderCount = previousOrderCount + 1;
@@ -182,10 +182,13 @@ const billingDetail = async (req, res) => {
       data: result,
     });
   } catch (err) {
-    console.error(err);
+    console.error(err); 
     res.status(500).json({ message: "Internal Server Error.", error: err.message });
   }
 };
+
+
+
 
 const getAllBillingDetails = async (req, res) => {
   try {
