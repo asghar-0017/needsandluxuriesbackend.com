@@ -63,8 +63,8 @@ const productSchema = new mongoose.Schema({
   price: { type: Number },
   Imageurl: { type: String },
   stitchedPrice: { type: Number },
-  isStitching: { type: Boolean, default: false },
-  stitchImage: { type: String, default: null },
+  isStitching: { type: Boolean, default: true },
+  stitchImage: { type: String }, // Change this to String
   category: { type: String },
   stretchData: [stretchDataSchema],
 });
@@ -78,7 +78,7 @@ const billingSchema = new mongoose.Schema({
   phone: { type: Number, required: true },
   email: { type: String, required: true },
   additionalInformation: { type: String },
-  orderId: { type: Number },
+  orderId: { type: String },
   orderDate: { type: Date, default: Date.now },
   cashOnDelivery: { type: Boolean, default: true },
   cashOnDeliveryImage: { type: String },

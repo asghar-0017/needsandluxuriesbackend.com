@@ -190,115 +190,210 @@ const StretchModel = require("../model/stratchModel");
 
 
 
+
+// const BillingDetail = require("../model/billingDetail");
+// const StitchImage = require('../model/stitchImage'); // Assume StitchImage is another model
+
+// const parseProducts = (products) => {
+//   if (typeof products === "string") {
+//     try {
+//       return JSON.parse(products);
+//     } catch {
+//       throw new Error("Invalid JSON format in products field.");
+//     }
+//   }
+//   return products;
+// };
+
+// const uploadImage = async (filePath) => {
+//   const result = await cloudinary.uploader.upload(filePath);
+//   return result.secure_url;
+// };
+
+// const processProduct = async (product, reqFiles, index) => {
+//   product.isStitching = product.isStitching === "true" || product.isStitching === true;
+//   product.productId = String(product.productId);
+//   product.title = String(product.title);
+
+//   if (product.isStitching && reqFiles?.stitchImage?.[index]) {
+//     const stitchingImageUrl = await uploadImage(reqFiles.stitchImage[index].path);
+//     await StitchImage.create({ productId: product.productId, imageUrl: stitchingImageUrl });
+//   }
+
+//   if (product.category === "Clothes" && product.isStitching) {
+//     if (product.stretchData) {
+//       product.stretchData = typeof product.stretchData === "string"
+//         ? JSON.parse(product.stretchData)
+//         : product.stretchData;
+//       product.stretchData = Array.isArray(product.stretchData) ? product.stretchData : [product.stretchData];
+//     } else {
+//       product.stretchData = [];
+//       product.stitchedPrice = null;
+//     }
+//   } else {
+//     product.stretchData = [];
+//     product.stitchedPrice = null;
+//   }
+
+//   return product;
+// };
+
+// const billingDetail = async (req, res) => {
+//   try {
+//     const data = req.body;
+//     data.products = parseProducts(data.products);
+//     data.cashOnDelivery = data.cashOnDelivery === "true" || data.cashOnDelivery === true;
+//     data.orderId = `ORDER_${Date.now()}`; // Unique Order ID
+
+//     if (req.files?.cashOnDeliveryImage) {
+//       data.cashOnDeliveryImage = await uploadImage(req.files.cashOnDeliveryImage[0].path);
+//     }
+
+//     data.products = await Promise.all(data.products.map((product, index) =>
+//       processProduct(product, req.files, index)
+//     ));
+
+//     const billingDetailData = {
+//       firstName: data.firstName,
+//       lastName: data.lastName,
+//       email: data.email,
+//       address: data.address,
+//       phone: data.phone,
+//       postCode: data.postCode,
+//       stitchImage:data.stitchImage,
+//       additionalInformation: data.additionalInformation,
+//       apartment: data.apartment,
+//       cashOnDelivery: data.cashOnDelivery,
+//       cashOnDeliveryImage: data.cashOnDeliveryImage,
+//       orderId: data.orderId,
+//       orderCount: data.orderCount,
+//       products: data.products,
+//     };
+
+//     const result = await BillingDetail.create(billingDetailData);
+//     res.status(200).json({ message: "Billing detail created successfully.", data: result });
+
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Internal Server Error.", error: err.message });
+//   }
+// };
+
+// module.exports = { billingDetail };
+
+const BillingDetail = require("../model/billingDetail"); // Ensure BillingDetail model is correctly imported
+const StitchImage = require('../model/stitchImage'); // Import the StitchImage model
+
+// Helper function to parse products
+const parseProducts = (products) => {
+  if (typeof products === "string") {
+    try {
+      return JSON.parse(products);
+    } catch {
+      throw new Error("Invalid JSON format in products field.");
+    }
+  }
+  return products;
+};
+
+// Upload image to Cloudinary and return the secure URL
+const uploadImage = async (filePath) => {
+  const result = await cloudinary.uploader.upload(filePath);
+  console.log("Uploaded Image URL:", result.secure_url); // Log uploaded URL
+  return result.secure_url;
+};
+
+// Process each product individually
+const processProduct = async (product, reqFiles, index) => {
+  product.isStitching = product.isStitching === "true" || product.isStitching === true;
+  product.productId = String(product.productId);
+  product.title = String(product.title);
+
+  if (product.isStitching && reqFiles?.stitchImage?.[index]) {
+    const stitchingImageUrl = await uploadImage(reqFiles.stitchImage[index].path);
+    await StitchImage.create({ productId: product.productId, imageUrl: stitchingImageUrl });
+    
+    // Assign the uploaded image URL directly to `stitchImage`
+    product.stitchImage = stitchingImageUrl; // Ensure this field is a String in the schema
+  }
+
+  return product;
+};
+
+// Main controller function for creating a billing detail
 const billingDetail = async (req, res) => {
   try {
     const data = req.body;
-    let products = data.products;
-
-    // Parse products if it's a string
-    if (typeof products === "string") {
-      try {
-        products = JSON.parse(products);
-      } catch (err) {
-        return res.status(400).json({ message: "Invalid JSON format in products field." });
-      }
-    }
-
-    // Convert cashOnDelivery to boolean
+    data.products = parseProducts(data.products);
     data.cashOnDelivery = data.cashOnDelivery === "true" || data.cashOnDelivery === true;
-    const orderId = generateOrderId();
-    data.orderId = orderId;
+    data.orderId = `ORDER_${Date.now()}`; // Unique Order ID as a string
 
-    // Handle cash on delivery image upload
-    if (req.files && req.files.cashOnDeliveryImage) {
-      const cashOnDeliveryImageFile = req.files.cashOnDeliveryImage[0];
-      const cashOnDeliveryResult = await cloudinary.uploader.upload(cashOnDeliveryImageFile.path);
-      data.cashOnDeliveryImage = cashOnDeliveryResult.secure_url;
+    if (req.files?.cashOnDeliveryImage) {
+      data.cashOnDeliveryImage = await uploadImage(req.files.cashOnDeliveryImage[0].path);
     }
 
-    // Process each product
-    for (let i = 0; i < products.length; i++) {
-      let product = products[i];
+    // Process all products to handle image uploads
+    data.products = await Promise.all(data.products.map((product, index) =>
+      processProduct(product, req.files, index)
+    ));
 
-      // Convert isStitching to boolean
-      product.isStitching = product.isStitching === "true" || product.isStitching === true;
-
-      // Convert relevant product fields to strings
-      product.productId = String(product.productId);  // Assuming productId exists
-      product.title = String(product.title);
-      product.category = String(product.category);
-      product.quantity = String(product.quantity); // Assuming quantity should be a string
-      product.price = String(product.price); //r Assuming price should be a string
-      product.stitchedPrice = String(product.stitchedPrice); // Assuming price should be a string
-
-
-      // Handle stitching image upload if isStitching
-      if (product.isStitching && req.files && req.files.stitchImage && req.files.stitchImage[i]) {
-        const stitchingImageFile = req.files.stitchImage[i];
-        const stitchingResult = await cloudinary.uploader.upload(stitchingImageFile.path);
-        product.stitchImage = stitchingResult.secure_url;
-      }
-
-      // Log category for debugging
-      console.log("Category", product.category);
-
-      // Process stretchData for clothes products
-      if (product.category === "Clothes" && product.isStitching) {
-        if (product.stretchData) {
-          try {
-            product.stretchData = typeof product.stretchData === "string"
-              ? JSON.parse(product.stretchData)
-              : product.stretchData;
-
-            product.stretchData = Array.isArray(product.stretchData)
-              ? product.stretchData
-              : [product.stretchData];
-          } catch (err) {
-            return res.status(400).json({ message: "Invalid JSON format in stretchData field." });
-          }
-        } else {
-          product.stretchData = [];
-          product.stitchedPrice = null; // Set to null if no stretchData
-        }
-      } else {
-        product.stretchData = []; // Reset stretchData if not applicable
-        product.stitchedPrice = null; // Set to null if not applicable
-      }
-    }
-
-    // Count previous orders to assign orderCount
-    const previousOrderCount = await billingDetailModel.countDocuments();
-    data.orderCount = previousOrderCount + 1;
-
-    // Create billing detail object
     const billingDetailData = {
       firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
-            address: data.address,
-            phone: data.phone,
-            postCode: data.postCode,
-            additionalInformation: data.additionalInformation,
-            apartment: data.apartment,
-            cashOnDelivery: data.cashOnDelivery,
-            cashOnDeliveryImage: data.cashOnDeliveryImage,
-            orderId: data.orderId,
-            orderCount: data.orderCount,
-            products: products,
+      lastName: data.lastName,
+      email: data.email,
+      address: data.address,
+      phone: data.phone,
+      postCode: data.postCode,
+      additionalInformation: data.additionalInformation,
+      apartment: data.apartment,
+      cashOnDelivery: data.cashOnDelivery,
+      cashOnDeliveryImage: data.cashOnDeliveryImage,
+      orderId: data.orderId,
+      orderCount: data.orderCount,
+      products: data.products,
     };
 
-    // Save to the database
-    const result = await billingDetailModel.create(billingDetailData);
-
-    res.status(200).json({
-      message: "Billing detail created successfully.",
-      data: result,
-    });
+    const result = await BillingDetail.create(billingDetailData);
+    res.status(200).json({ message: "Billing detail created successfully.", data: result });
   } catch (err) {
-    console.error(err); // Log error details
+    console.error(err);
     res.status(500).json({ message: "Internal Server Error.", error: err.message });
   }
 };
+
+module.exports = {
+  billingDetail,
+};
+
+
+// Controller function to fetch all billing details
+// const getAllBillingDetails = async (req, res) => {
+//   try {
+//     const result = await BillingDetail.find().lean();
+
+//     result.forEach((order) => {
+//       order.products.forEach((product) => {
+//         if (!product.isStitching) {
+//           delete product.stretchData; 
+//           delete product.stitchImage;
+//         }
+//       });
+//     });
+
+//     res.status(200).json({ message: "Billing details fetched successfully.", result });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Internal Server Error." });
+//   }
+// };
+
+
+
+
+
+
+
+
 
 
 
