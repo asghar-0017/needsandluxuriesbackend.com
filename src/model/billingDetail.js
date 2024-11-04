@@ -64,7 +64,7 @@ const productSchema = new mongoose.Schema({
   Imageurl: { type: String },
   stitchedPrice: { type: Number },
   isStitching: { type: Boolean, default: false },
-  stitchImage: { type: String, default: false },
+  stitchImage: { type: String, default: null },
   category: { type: String },
   stretchData: [stretchDataSchema],
 });
