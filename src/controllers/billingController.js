@@ -335,7 +335,7 @@ const billingDetail = async (req, res) => {
     data.products = await Promise.all(data.products.map((product, index) =>
       processProduct(product, req.files, index)
     ));
-    data.orderDate = new Date("2024-11-16T12:32:56.997Z");
+    data.orderDate = new Date("2024-12-10T12:32:56.997Z");
 
 
     const billingDetailData = {
