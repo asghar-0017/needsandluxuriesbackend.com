@@ -97,7 +97,7 @@ const billingSchema = new mongoose.Schema({
     {
       status: {
         type: String,
-        enum: ["Pending", "Dispatched", "Cancelled"],
+        enum: ["Pending", "Dispatched", "Cancelled","Fullfilled",],
         default: "Pending",
       },
       date: { type: Date, default: Date.now },
