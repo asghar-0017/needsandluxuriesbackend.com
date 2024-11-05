@@ -306,19 +306,15 @@ const processProduct = async (product, reqFiles, index) => {
   product.productId = String(product.productId);
   product.title = String(product.title);
 
-  // Check if the category is "Clothes" and stitching is required
-  if (product.category === "Clothes" && product.isStitching) {
-    // Upload stitch image if available
+  if (product.category === "Clothes") {
     if (reqFiles?.stitchImage?.[index]) {
       const stitchingImageUrl = await uploadImage(reqFiles.stitchImage[index].path);
       await StitchImage.create({ productId: product.productId, imageUrl: stitchingImageUrl });
       product.stitchImage = stitchingImageUrl;
     }
 
-    // Attach stretch data if stitching is required
-    product.stretchData = product.stretchData || []; // Add empty stretchData if not already provided
+    product.stretchData = product.stretchData || []; 
   } else {
-    // Ensure stretchData is undefined if not applicable
     delete product.stretchData;
   }
 
