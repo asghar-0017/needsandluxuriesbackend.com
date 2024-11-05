@@ -306,7 +306,7 @@ const processProduct = async (product, reqFiles, index) => {
   product.productId = String(product.productId);
   product.title = String(product.title);
 
-  if (product.category === "Clothes") {
+  if (product.category === "Clothes" && product.isStitching) {
     if (reqFiles?.stitchImage?.[index]) {
       const stitchingImageUrl = await uploadImage(reqFiles.stitchImage[index].path);
       await StitchImage.create({ productId: product.productId, imageUrl: stitchingImageUrl });
@@ -335,7 +335,7 @@ const billingDetail = async (req, res) => {
     data.products = await Promise.all(data.products.map((product, index) =>
       processProduct(product, req.files, index)
     ));
-    data.orderDate = new Date("2024-11-18T12:32:56.997Z");
+    data.orderDate = new Date("2024-11-16T12:32:56.997Z");
 
 
     const billingDetailData = {
