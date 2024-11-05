@@ -281,10 +281,9 @@ const StretchModel = require("../model/stratchModel");
 
 // module.exports = { billingDetail };
 
-const BillingDetail = require("../model/billingDetail"); // Ensure BillingDetail model is correctly imported
-const StitchImage = require('../model/stitchImage'); // Import the StitchImage model
+const BillingDetail = require("../model/billingDetail");
+const StitchImage = require("../model/stitchImage");
 
-// Helper function to parse products
 const parseProducts = (products) => {
   if (typeof products === "string") {
     try {
@@ -296,43 +295,47 @@ const parseProducts = (products) => {
   return products;
 };
 
-// Upload image to Cloudinary and return the secure URL
 const uploadImage = async (filePath) => {
   const result = await cloudinary.uploader.upload(filePath);
-  console.log("Uploaded Image URL:", result.secure_url); // Log uploaded URL
+  console.log("Uploaded Image URL:", result.secure_url);
   return result.secure_url;
 };
 
-// Process each product individually
 const processProduct = async (product, reqFiles, index) => {
   product.isStitching = product.isStitching === "true" || product.isStitching === true;
   product.productId = String(product.productId);
   product.title = String(product.title);
 
-  if (product.isStitching && reqFiles?.stitchImage?.[index]) {
-    const stitchingImageUrl = await uploadImage(reqFiles.stitchImage[index].path);
-    await StitchImage.create({ productId: product.productId, imageUrl: stitchingImageUrl });
-    
-    // Assign the uploaded image URL directly to `stitchImage`
-    product.stitchImage = stitchingImageUrl; // Ensure this field is a String in the schema
+  // Check if the category is "Clothes" and stitching is required
+  if (product.category === "Clothes" && product.isStitching) {
+    // Upload stitch image if available
+    if (reqFiles?.stitchImage?.[index]) {
+      const stitchingImageUrl = await uploadImage(reqFiles.stitchImage[index].path);
+      await StitchImage.create({ productId: product.productId, imageUrl: stitchingImageUrl });
+      product.stitchImage = stitchingImageUrl;
+    }
+
+    // Attach stretch data if stitching is required
+    product.stretchData = product.stretchData || []; // Add empty stretchData if not already provided
+  } else {
+    // Ensure stretchData is undefined if not applicable
+    delete product.stretchData;
   }
 
   return product;
 };
 
-// Main controller function for creating a billing detail
 const billingDetail = async (req, res) => {
   try {
     const data = req.body;
     data.products = parseProducts(data.products);
     data.cashOnDelivery = data.cashOnDelivery === "true" || data.cashOnDelivery === true;
-    data.orderId = `ORDER_${Date.now()}`; // Unique Order ID as a string
+    data.orderId = `ORDER_${Date.now()}`;
 
     if (req.files?.cashOnDeliveryImage) {
       data.cashOnDeliveryImage = await uploadImage(req.files.cashOnDeliveryImage[0].path);
     }
 
-    // Process all products to handle image uploads
     data.products = await Promise.all(data.products.map((product, index) =>
       processProduct(product, req.files, index)
     ));
@@ -361,9 +364,7 @@ const billingDetail = async (req, res) => {
   }
 };
 
-module.exports = {
-  billingDetail,
-};
+
 
 
 // Controller function to fetch all billing details

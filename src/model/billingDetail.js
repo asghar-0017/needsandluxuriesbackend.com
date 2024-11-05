@@ -64,7 +64,7 @@ const productSchema = new mongoose.Schema({
   Imageurl: { type: String },
   stitchedPrice: { type: Number },
   isStitching: { type: Boolean, default: true },
-  stitchImage: { type: String }, // Change this to String
+  stitchImage: { type: String },
   category: { type: String },
   stretchData: [stretchDataSchema],
 });
@@ -101,7 +101,6 @@ const billingSchema = new mongoose.Schema({
   orderCount: { type: Number },
 });
 
-// Convert productId to ObjectId if necessary
 billingSchema.methods.prepareProducts = function () {
   this.products.forEach((product) => {
     if (typeof product.productId === 'string' && mongoose.Types.ObjectId.isValid(product.productId)) {
