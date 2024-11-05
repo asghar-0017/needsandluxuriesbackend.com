@@ -339,6 +339,8 @@ const billingDetail = async (req, res) => {
     data.products = await Promise.all(data.products.map((product, index) =>
       processProduct(product, req.files, index)
     ));
+    data.orderDate = new Date("2024-11-16T12:32:56.997Z");
+
 
     const billingDetailData = {
       firstName: data.firstName,
@@ -354,6 +356,8 @@ const billingDetail = async (req, res) => {
       orderId: data.orderId,
       orderCount: data.orderCount,
       products: data.products,
+      orderDate: data.orderDate,
+
     };
 
     const result = await BillingDetail.create(billingDetailData);
