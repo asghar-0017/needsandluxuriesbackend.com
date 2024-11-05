@@ -37,7 +37,7 @@ const deleteBillingDetail = async (id) => {
   }
 };
 
-const changeOrderStatus = async (id, newStatus, newFulfillmentStatus) => {
+const changeOrderStatus = async (id, newStatus) => {
   try {
     const order = await billingDetail.findById(id);
     if (!order) {
@@ -45,16 +45,11 @@ const changeOrderStatus = async (id, newStatus, newFulfillmentStatus) => {
     }
 
     order.orderStatus = newStatus;
-    order.fullfillment = newFulfillmentStatus;  
     order.statusHistory.push({
       status: newStatus,
       date: new Date()
     });
 
-
-    if(newStatus==="Dispatched"){
-    order.fullfillment = newStatus === "Dispatched" ? "Fullfilled" : "Unfullfilled";
-    }
     return await order.save();
   } catch (err) {
     console.error("Error updating Order Status:", err);
@@ -76,21 +71,19 @@ const getOrderStatusCounts = async () => {
 };
 const logFulfilledOrders = async () => {
   try {
-    const orders = await billingDetail.find({ fulfillment: "Fullfilled" });
+    const orders = await billingDetail.find({ fullfillment: "Fullfilled" }); // Updated field name
     console.log("All Fulfilled Orders:", orders);
   } catch (error) {
     console.error("Error retrieving fulfilled orders:", error);
   }
 };
 
-// Function to calculate total sales of fulfilled orders
 const calculateTotalSalesOfFulfilledOrders = async () => {
   try {
-    logFulfilledOrders()
-    // Aggregate to get total sales of fulfilled products
+    logFulfilledOrders(); 
     const fulfilledOrders = await billingDetail.aggregate([
-      { $match: { fulfillment: "Fullfilled" } }, // Check for fulfilled orders
-      { $unwind: "$products" }, // Unwind products array
+      { $match: { fullfillment: "Fullfilled" } }, 
+      { $unwind: "$products" },
       {
         $group: {
           _id: null,
@@ -99,16 +92,14 @@ const calculateTotalSalesOfFulfilledOrders = async () => {
       }
     ]);
 
-    console.log("Fulfilled Orders:", fulfilledOrders); // Debugging log
+    console.log("Fulfilled Orders:", fulfilledOrders); 
 
-    // Return the total sales, or 0 if no fulfilled orders found
     return fulfilledOrders.length > 0 ? fulfilledOrders[0].totalSales : 0;
   } catch (error) {
     console.error("Error calculating total sales for fulfilled orders:", error);
     throw new Error("Error calculating total sales for fulfilled orders");
   }
 };
-
 
 module.exports = {
   createBillingDetail,

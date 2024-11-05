@@ -36,9 +36,9 @@ const deleteBillingDetail = async (id) => {
   }
 };
 
-const changeOrderStatus = async (id, newStatus, newFulfillmentStatus) => {
+const changeOrderStatus = async (id, newStatus) => {
   try {
-    return await dataInRepo.changeOrderStatus(id, newStatus, newFulfillmentStatus);
+    return await dataInRepo.changeOrderStatus(id, newStatus);
   } catch (error) {
     throw error;
   }

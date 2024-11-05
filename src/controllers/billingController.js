@@ -186,8 +186,8 @@ const deleteBillingDetail = async (req, res) => {
 const changeOrderStatus = async (req, res) => {
   try {
     const id = req.params.id;
-    const { newStatus, newFulfillmentStatus } = req.body; 
-    const result = await sendDataInService.changeOrderStatus(id, newStatus, newFulfillmentStatus);
+    const { newStatus } = req.body; 
+    const result = await sendDataInService.changeOrderStatus(id, newStatus);
     res
       .status(200)
       .json({ message: "Order status updated successfully.", result });
@@ -196,6 +196,8 @@ const changeOrderStatus = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error." });
   }
 };
+
+
 const orderStatusCounts = async (req, res) => {
   try {
     const result = await sendDataInService.getOrderStatusCounts();

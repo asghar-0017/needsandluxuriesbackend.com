@@ -85,14 +85,14 @@ const billingSchema = new mongoose.Schema({
   products: [productSchema],
   orderStatus: {
     type: String,
-    enum: ["Pending", "Dispatched", "Cancelled"],
+    enum: ["Pending", "Dispatched", "Cancelled","Fullfilled",],
     default: "Pending",
   },
-  fullfillment: {
-    type: String,
-    enum: ["Unfullfilled", "Fullfilled"],
-    default: "Unfullfilled",
-  },
+  // fullfillment: {
+  //   type: String,
+  //   enum: ["Unfullfilled", "Fullfilled"],
+  //   default: "Unfullfilled",
+  // },
   statusHistory: [
     {
       status: {
