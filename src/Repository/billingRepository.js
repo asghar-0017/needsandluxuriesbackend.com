@@ -39,6 +39,7 @@ const deleteBillingDetail = async (id) => {
 
 const changeOrderStatus = async (id, newStatus) => {
   try {
+    console.log("New Status",newStatus)
     const order = await billingDetail.findById(id);
     if (!order) {
       throw new Error(`Order not found with ID ${id}`);
