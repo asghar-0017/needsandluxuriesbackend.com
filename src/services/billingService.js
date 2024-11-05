@@ -36,9 +36,9 @@ const deleteBillingDetail = async (id) => {
   }
 };
 
-const changeOrderStatus = async (id, newStatus) => {
+const changeOrderStatus = async (id, newStatus, newFulfillmentStatus) => {
   try {
-    return await dataInRepo.changeOrderStatus(id, newStatus);
+    return await dataInRepo.changeOrderStatus(id, newStatus, newFulfillmentStatus);
   } catch (error) {
     throw error;
   }
@@ -53,11 +53,20 @@ const getOrderStatusCounts = async () => {
     }
 }
 
+const calculateTotalSalesOfFulfilledOrders = async () => {
+  try {
+    return await dataInRepo.calculateTotalSalesOfFulfilledOrders();
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createBillingDetail,
   getAllBillingDetails,
   updateBillingDetail,
   deleteBillingDetail,
   changeOrderStatus,
-  getOrderStatusCounts
+  getOrderStatusCounts,
+  calculateTotalSalesOfFulfilledOrders
 };

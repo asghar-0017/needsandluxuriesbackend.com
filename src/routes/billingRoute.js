@@ -5,7 +5,8 @@ const {
   deleteBillingDetail,
   changeOrderStatus,
   orderStatusCounts,
-  getOrderByOrderId
+  getOrderByOrderId,
+  getTotalSalesOfFulfilledOrders  
 } = require("../controllers/billingController.js");
 const { cloudinary, upload } = require("../services/ImageService.js");
 
@@ -21,6 +22,9 @@ const billingRoute = (app) => {
   app.put("/billing-status/:id", changeOrderStatus);
   app.get("/order-status-counts", orderStatusCounts); 
   app.get('/get-order-by-orderId/:orderId',getOrderByOrderId)
+
+  app.get("/total-sales/fulfilled", getTotalSalesOfFulfilledOrders);
+
 
 };
 

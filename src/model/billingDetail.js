@@ -88,6 +88,11 @@ const billingSchema = new mongoose.Schema({
     enum: ["Pending", "Dispatched", "Cancelled"],
     default: "Pending",
   },
+  fullfillment: {
+    type: String,
+    enum: ["Unfullfilled", "Fullfilled"],
+    default: "Unfullfilled",
+  },
   statusHistory: [
     {
       status: {
