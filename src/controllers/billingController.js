@@ -96,7 +96,7 @@ const billingDetail = async (req, res) => {
 const getAllBillingDetails = async (req, res) => {
   try {
     const result = await billingDetailModel.find().lean();
-
+    console.log("Result",result)
     result.forEach((order) => {
       order.products.forEach((product) => {
         if (product.isStitching === false) {

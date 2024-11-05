@@ -110,6 +110,43 @@ const calculateTotalSalesOfFulfilledOrders = async () => {
   }
 };
 
+// const calculateSalesUpToDate = async (upToDate) => {
+//   try {
+//     logFulfilledOrders();
+
+//     const fulfilledOrders = await billingDetail.aggregate([
+//       {
+//         $match: {
+//           orderStatus: "Fullfilled",
+//           orderDate: { $lte: new Date(upToDate) } // Filter by date
+//         }
+//       },
+//       { $unwind: "$products" },
+//       {
+//         $group: {
+//           _id: null,
+//           totalSales: {
+//             $sum: {
+//               $add: [
+//                 { $multiply: ["$products.price", "$products.quantity"] },
+//                 { $cond: { if: { $gt: ["$products.stitchedPrice", 0] }, then: "$products.stitchedPrice", else: 0 } }
+//               ]
+//             }
+//           }
+//         }
+//       }
+//     ]);
+
+//     console.log("Sales Account up to date:", fulfilledOrders);
+
+//     return fulfilledOrders.length > 0 ? fulfilledOrders[0].totalSales : 0;
+//   } catch (error) {
+//     console.error("Error calculating total sales up to date:", error);
+//     throw new Error("Error calculating total sales up to date");
+//   }
+// };
+
+
 module.exports = {
   createBillingDetail,
   getAllBillingDetails,
