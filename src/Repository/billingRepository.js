@@ -72,7 +72,7 @@ const getOrderStatusCounts = async () => {
 };
 const logFulfilledOrders = async () => {
   try {
-    const orders = await billingDetail.find({ fullfillment: "Fullfilled" }); // Updated field name
+    const orders = await billingDetail.find({ orderStatus: "Fullfilled" }); // Updated field name
     console.log("All Fulfilled Orders:", orders);
   } catch (error) {
     console.error("Error retrieving fulfilled orders:", error);
@@ -81,19 +81,27 @@ const logFulfilledOrders = async () => {
 
 const calculateTotalSalesOfFulfilledOrders = async () => {
   try {
-    logFulfilledOrders(); 
+    logFulfilledOrders();
+
     const fulfilledOrders = await billingDetail.aggregate([
-      { $match: { fullfillment: "Fullfilled" } }, 
+      { $match: { orderStatus: "Fullfilled" } },
       { $unwind: "$products" },
       {
         $group: {
           _id: null,
-          totalSales: { $sum: { $multiply: ["$products.price", "$products.quantity"] } } 
+          totalSales: {
+            $sum: {
+              $add: [
+                { $multiply: ["$products.price", "$products.quantity"] },
+                { $cond: { if: { $gt: ["$products.stitchedPrice", 0] }, then: "$products.stitchedPrice", else: 0 } }
+              ]
+            }
+          }
         }
       }
     ]);
 
-    console.log("Fulfilled Orders:", fulfilledOrders); 
+    console.log("Fulfilled Orders:", fulfilledOrders);
 
     return fulfilledOrders.length > 0 ? fulfilledOrders[0].totalSales : 0;
   } catch (error) {
