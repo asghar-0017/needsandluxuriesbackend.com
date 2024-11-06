@@ -164,6 +164,7 @@ const billingDetail = async (req, res) => {
       cashOnDeliveryImage: data.cashOnDeliveryImage,
       orderId: data.orderId,
       orderCount: data.orderCount,
+      orderDate:data.orderDate,
       products: data.products,
     };
 
