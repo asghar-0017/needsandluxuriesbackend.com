@@ -39,24 +39,27 @@ const deleteBillingDetail = async (id) => {
 
 const changeOrderStatus = async (id, newStatus) => {
   try {
-    console.log("New Status",newStatus)
+    console.log("New Status", newStatus);
     const order = await billingDetail.findById(id);
+
     if (!order) {
       throw new Error(`Order not found with ID ${id}`);
     }
 
     order.orderStatus = newStatus;
+
     order.statusHistory.push({
       status: newStatus,
       date: new Date()
     });
 
-    return await order.save();
+    return await order.save(); 
   } catch (err) {
     console.error("Error updating Order Status:", err);
     throw new Error("Error updating Order Status");
   }
 };
+
 
 
 const getOrderStatusCounts = async () => {
