@@ -196,27 +196,26 @@ const uploadImage = async (filePath) => {
 };
 
 const processProduct = async (product, reqFiles, index) => {
-  try {
-    product.isStitching = product.isStitching === "true" || product.isStitching === true;
-    product.productId = String(product.productId);
-    product.title = String(product.title);
+  product.isStitching = product.isStitching === "true" || product.isStitching === true;
+  product.productId = String(product.productId);
+  product.title = String(product.title);
 
-    if (product.category === "Clothes" && product.isStitching) {
-      if (reqFiles?.stitchImage?.[index]) {
-        const stitchingImageUrl = await uploadImage(reqFiles.stitchImage[index].path);
-        await StitchImage.create({ productId: product.productId, stitchImage: stitchingImageUrl });
-        product.stitchImage = stitchingImageUrl;
-      }
-      product.stretchData = product.stretchData || [];
-    } else {
-      delete product.stretchData;
+  // Set stitch image only for "Clothes" category and when stitching is true
+  if (product.category === "Clothes" && product.isStitching) {
+    if (reqFiles?.stitchImage?.[index]) {
+      const stitchingImageUrl = await uploadImage(reqFiles.stitchImage[index].path);
+      await StitchImage.create({ productId: product.productId, stitchImage: stitchingImageUrl });
+      product.stitchImage = stitchingImageUrl;
     }
-    return product;
-  } catch (error) {
-    console.error("Error processing product:", error);
-    throw error;
+    product.stretchData = product.stretchData || [];
+  } else {
+    delete product.stretchData;
+    delete product.stitchImage; // Ensure stitchImage is not included for non-clothing items
   }
+
+  return product;
 };
+
 
 const billingDetail = async (req, res) => {
   try {
