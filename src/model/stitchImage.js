@@ -1,16 +1,19 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const stitchImageSchema = new mongoose.Schema({
   productId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
+    ref: 'Product', // Assuming you have a Product model
     required: true,
   },
-  stitchImage: { type: String },
+  stitchImage: { type: String }, // Change from ObjectId to String
+
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-module.exports = mongoose.model("StitchImage", stitchImageSchema);
+const StitchImage = mongoose.model('StitchImage', stitchImageSchema);
+
+module.exports = StitchImage;
