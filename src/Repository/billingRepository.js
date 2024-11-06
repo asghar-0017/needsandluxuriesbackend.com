@@ -113,41 +113,48 @@ const calculateTotalSalesOfFulfilledOrders = async () => {
   }
 };
 
-// const calculateSalesUpToDate = async (upToDate) => {
-//   try {
-//     logFulfilledOrders();
 
-//     const fulfilledOrders = await billingDetail.aggregate([
-//       {
-//         $match: {
-//           orderStatus: "Fullfilled",
-//           orderDate: { $lte: new Date(upToDate) } // Filter by date
-//         }
-//       },
-//       { $unwind: "$products" },
-//       {
-//         $group: {
-//           _id: null,
-//           totalSales: {
-//             $sum: {
-//               $add: [
-//                 { $multiply: ["$products.price", "$products.quantity"] },
-//                 { $cond: { if: { $gt: ["$products.stitchedPrice", 0] }, then: "$products.stitchedPrice", else: 0 } }
-//               ]
-//             }
-//           }
-//         }
-//       }
-//     ]);
+const calculateSalesOfDate = async (date) => {
+  try {
+    const formattedDate = new Date(date);
 
-//     console.log("Sales Account up to date:", fulfilledOrders);
+    const startOfDay = new Date(formattedDate.setHours(0, 0, 0, 0)); 
+    const endOfDay = new Date(formattedDate.setHours(23, 59, 59, 999)); 
 
-//     return fulfilledOrders.length > 0 ? fulfilledOrders[0].totalSales : 0;
-//   } catch (error) {
-//     console.error("Error calculating total sales up to date:", error);
-//     throw new Error("Error calculating total sales up to date");
-//   }
-// };
+    const fulfilledOrders = await billingDetail.aggregate([
+      {
+        $match: {
+          orderStatus: "Fullfilled", 
+          orderDate: { 
+            $gte: startOfDay, 
+            $lte: endOfDay    
+          }
+        }
+      },
+      { $unwind: "$products" },  
+      {
+        $group: {
+          _id: null, 
+          totalSales: {
+            $sum: {
+              $add: [
+                { $multiply: ["$products.price", "$products.quantity"] },
+                { $cond: { if: { $gt: ["$products.stitchedPrice", 0] }, then: "$products.stitchedPrice", else: 0 } } 
+              ]
+            }
+          }
+        }
+      }
+    ]);
+
+    console.log("Sales for the specific date:", fulfilledOrders);
+
+    return fulfilledOrders.length > 0 ? fulfilledOrders[0].totalSales : 0; 
+  } catch (error) {
+    console.error("Error calculating total sales for the date:", error);
+    throw new Error("Error calculating total sales for the date");
+  }
+};
 
 
 module.exports = {
@@ -157,5 +164,6 @@ module.exports = {
   deleteBillingDetail,
   changeOrderStatus,
   getOrderStatusCounts,
-  calculateTotalSalesOfFulfilledOrders
+  calculateTotalSalesOfFulfilledOrders,
+  calculateSalesOfDate
 };

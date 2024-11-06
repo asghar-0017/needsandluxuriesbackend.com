@@ -176,10 +176,6 @@ const billingDetail = async (req, res) => {
   }
 };
 
-module.exports = {
-  billingDetail,
-};
-
 
 
 
@@ -327,6 +323,17 @@ const getTotalSalesOfFulfilledOrders = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+const getTotalSalesOfDate = async (req, res) => {
+  try {
+    const date = req.params.date; 
+    const totalSales = await sendDataInService.calculateTotalSalesOfDate(date);
+    res.status(200).json({ message:`Sales of ${date}`, sales:totalSales });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 
 
 module.exports = {
@@ -337,5 +344,6 @@ module.exports = {
   changeOrderStatus,
   orderStatusCounts,
   getOrderByOrderId,
-  getTotalSalesOfFulfilledOrders
+  getTotalSalesOfFulfilledOrders,
+  getTotalSalesOfDate
 };

@@ -60,6 +60,14 @@ const calculateTotalSalesOfFulfilledOrders = async () => {
     throw error;
   }
 };
+const calculateTotalSalesOfDate = async (date) => {
+  try {
+    return await dataInRepo.calculateSalesOfDate(date);  
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 module.exports = {
   createBillingDetail,
@@ -68,5 +76,6 @@ module.exports = {
   deleteBillingDetail,
   changeOrderStatus,
   getOrderStatusCounts,
-  calculateTotalSalesOfFulfilledOrders
+  calculateTotalSalesOfFulfilledOrders,
+  calculateTotalSalesOfDate
 };
