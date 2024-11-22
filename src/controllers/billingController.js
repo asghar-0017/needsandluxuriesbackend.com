@@ -7,87 +7,7 @@ const stretchDataModel = require("../model/stratchModel");
 const StretchModel = require("../model/stratchModel"); 
 
 const billingDetailMal=require('../mediater/billingDetail')
-// const StitchImage = require("../model/stitchImage");
 
-// const parseProducts = (products) => {
-//   if (typeof products === "string") {
-//     try {
-//       return JSON.parse(products);
-//     } catch {
-//       throw new Error("Invalid JSON format in products field.");
-//     }
-//   }
-//   return products;
-// };
-
-// const uploadImage = async (filePath) => {
-//   const result = await cloudinary.uploader.upload(filePath);
-//   console.log("Uploaded Image URL:", result.secure_url);
-//   return result.secure_url;
-// };
-
-// const processProduct = async (product, reqFiles, index) => {
-//   product.isStitching = product.isStitching === "true" || product.isStitching === true;
-//   product.productId = String(product.productId);
-//   product.title = String(product.title);
-
-//   if (product.category === "Clothes" && product.isStitching) {
-//     if (reqFiles?.stitchImage?.[index]) {
-//       const stitchingImageUrl = await uploadImage(reqFiles.stitchImage[index].path);
-//       await StitchImage.create({ productId: product.productId, imageUrl: stitchingImageUrl });
-//       product.stitchImage = stitchingImageUrl;
-//     }
-
-//     product.stretchData = product.stretchData || []; 
-//   } else {
-//     delete product.stretchData;
-//   }
-
-//   return product;
-// };
-
-// const billingDetail = async (req, res) => {
-//   try {
-//     const data = req.body;
-//     data.products = parseProducts(data.products);
-//     data.cashOnDelivery = data.cashOnDelivery === "true" || data.cashOnDelivery === true;
-//     data.orderId = `ORDER_${Date.now()}`;
-
-//     if (req.files?.cashOnDeliveryImage) {
-//       data.cashOnDeliveryImage = await uploadImage(req.files.cashOnDeliveryImage[0].path);
-//     }
-
-//     data.products = await Promise.all(data.products.map((product, index) =>
-//       processProduct(product, req.files, index)
-//     ));
-//     // data.orderDate = new Date("2024-12-10T12:32:56.997Z");
-
-
-//     const billingDetailData = {
-//       firstName: data.firstName,
-//       lastName: data.lastName,
-//       email: data.email,
-//       address: data.address,
-//       phone: data.phone,
-//       postCode: data.postCode,
-//       additionalInformation: data.additionalInformation,
-//       apartment: data.apartment,
-//       cashOnDelivery: data.cashOnDelivery,
-//       cashOnDeliveryImage: data.cashOnDeliveryImage,
-//       orderId: data.orderId,
-//       orderCount: data.orderCount,
-//       products: data.products,
-//       // orderDate: data.orderDate,
-
-//     };
-
-//     const result = await BillingDetail.create(billingDetailData);
-//     res.status(200).json({ message: "Billing detail created successfully.", data: result });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Internal Server Error.", error: err.message });
-//   }
-// };
 
 
 
@@ -169,7 +89,6 @@ const billingDetails = async (req, res) => {
       products: data.products,
     };
 
-    BillingDetail(data)
     const result = await BillingDetail.create(billingDetailData);
     res.status(200).json({ message: "Billing detail created successfully.", data: result });
   } catch (err) {
