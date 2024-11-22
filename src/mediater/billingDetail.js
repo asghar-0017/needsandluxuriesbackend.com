@@ -31,7 +31,7 @@ const totalPrice = data.products.reduce(
 );
 
 const mailOptions = {
-  from: `"Needs and Luxuries" <${process.env.EMAIL_USER}>`,
+  from: `"Needs and Luxuries" <admin.needsandluxuries.com>`,
   to: data.email,
   subject: `Order Confirmation - ${data.firstName} ${data.lastName}`,
   html: `
@@ -88,7 +88,7 @@ const mailOptions = {
 };
 
 const mailClient = {
-  from: `"Needs and Luxuries" <${process.env.EMAIL_USER}>`,
+  from: `"Needs and Luxuries" <admin.needsandluxuries.com>`,
   to: process.env.ADMIN_EMAIL,
   subject: `New Order Notification - ${data.firstName} ${data.lastName}`,
   html: `
