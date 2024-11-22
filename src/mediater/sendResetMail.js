@@ -5,14 +5,14 @@ dotenv.config();
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'fa21bscs0017@maju.edu.pk',
-        pass: 'eoeb amae fgaw adeu'
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASS
     }
 });
 
 const sendResetEmail = async (email, code) => {
     const mailOptions = {
-        from: `"Needs and Luxuries" <${process.env.SMTP_USER}>`,
+        from: `"Needs and Luxuries" <${process.env.EMAIL}>`,
         to: email,
         subject: 'Password Reset',
         text: `You requested a password reset. Your reset code is: ${code}`

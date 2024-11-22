@@ -6,14 +6,12 @@ const orderId=require('./generateOrderId')
 const billingDetailMail = async (data) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
+      service: 'gmail',
       auth: {
-        user: 'fa21bscs0017@maju.edu.pk', // Replace with your email
-        pass: 'eoeb amae fgaw adeu', // Replace with your Gmail app password
-      },
-    });
+          user: process.env.EMAIL,
+          pass: process.env.EMAIL_PASS
+      }
+  });
 
     const productsInfo = data.products.map(product =>
       `<tr>
@@ -27,7 +25,7 @@ const billingDetailMail = async (data) => {
     const totalPrice = data.products.reduce((total, product) => total + (product.quantity * product.price), 0);
 
     const mailOptions = {
-      from: `"Needs and Luxuries" <${process.env.SMTP_USER}>`,
+      from: `"Needs and Luxuries" <${process.env.EMAIL}>`,
       to: data.email,
       subject: `Order Confirmation - ${data.firstName} ${data.lastName}`,
       html: `
@@ -87,7 +85,7 @@ const billingDetailMail = async (data) => {
     };
 
     const mailClient = {
-      from: `"Needs and Luxuries" <${process.env.SMTP_USER}>`,
+      from: `"Needs and Luxuries" <${process.env.EMAIL}>`,
       to: 'rajaasgharali009@gmail.com', 
       subject: `New Order from ${data.firstName} ${data.lastName}`,
       html: `

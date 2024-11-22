@@ -8,12 +8,10 @@ const generateToken = (userId) => {
 const sendEmail =async (usermail,code)=>{
     const resetUrl = `http://localhost:3000/reset-password?email=${encodeURIComponent(usermail)}`;
     const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, // or 'STARTTLS'
+        service: 'gmail',
         auth: {
-            user: 'fa21bscs0017@maju.edu.pk',
-            pass: "eoeb amae fgaw adeu",
+            user: process.env.EMAIL,
+            pass: process.env.EMAIL_PASS
         }
     });
 
