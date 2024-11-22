@@ -5,9 +5,8 @@ const stretchDataModel = require("../model/stratchModel");
 // const generateOrderId = require("../mediater/generateOrderId");
 // const { cloudinary, upload } = require("../services/ImageService");
 const StretchModel = require("../model/stratchModel"); 
-const Mail = require('../services/MailService')
 
-// const BillingDetail = require("../model/billingDetail");
+const billingDetailMal=require('../mediater/billingDetail')
 // const StitchImage = require("../model/stitchImage");
 
 // const parseProducts = (products) => {
@@ -136,7 +135,7 @@ const processProduct = async (product, reqFiles, index) => {
   return product;
 };
 
-const billingDetail = async (req, res) => {
+const billingDetails = async (req, res) => {
   try {
     const data = req.body;
     data.products = parseProducts(data.products);
@@ -152,8 +151,7 @@ const billingDetail = async (req, res) => {
     );
     data.orderDate = new Date("2024-12-10T12:32:56.997Z");
 
-    Mail(data)
-
+    billingDetailMal(data)
     const billingDetailData = {
       firstName: data.firstName,
       lastName: data.lastName,
@@ -171,6 +169,7 @@ const billingDetail = async (req, res) => {
       products: data.products,
     };
 
+    BillingDetail(data)
     const result = await BillingDetail.create(billingDetailData);
     res.status(200).json({ message: "Billing detail created successfully.", data: result });
   } catch (err) {
@@ -340,7 +339,7 @@ const getTotalSalesOfDate = async (req, res) => {
 
 
 module.exports = {
-  billingDetail,
+  billingDetails,
   getAllBillingDetails,
   updateBillingDetail,
   deleteBillingDetail,
