@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const uri = process.env.MONGODB_URI;
+const uri = 'mongodb+srv://fa21bscs0017:ymqyksQbB5MDRoEp@cluster0.kxhqi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 if (!uri) {
   console.error('Error: MONGODB_URI is not defined in the environment variables');
@@ -31,7 +31,7 @@ const initializeAdmin = async () => {
       const newAdmin = new Auth({
         userName: 'admin',
         password: hashedPassword,
-        email: process.env.ADMIN_EMAIL,
+        email: 'rajaasgharali009@gmail.com',
         adminId: 786,
       });
 
