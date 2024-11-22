@@ -8,8 +8,8 @@ const Mail = async (data) => {
       port: 587,
       secure: false, // true for port 465, false for port 587
       auth: {
-        user: 'fa21bscs0017@maju.edu.pk', // stored in environment variable
-        pass: 'eoeb amae fgaw adeu', // stored in environment variable
+        user: process.env.EMAIL, // stored in environment variable
+        pass: process.env.EMAIL_PASS, // stored in environment variable
       },
     });
 

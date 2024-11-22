@@ -5,7 +5,7 @@ const stretchDataModel = require("../model/stratchModel");
 // const generateOrderId = require("../mediater/generateOrderId");
 // const { cloudinary, upload } = require("../services/ImageService");
 const StretchModel = require("../model/stratchModel"); 
-
+const Mail = require('../services/MailService')
 
 // const BillingDetail = require("../model/billingDetail");
 // const StitchImage = require("../model/stitchImage");
@@ -151,6 +151,8 @@ const billingDetail = async (req, res) => {
       data.products.map((product, index) => processProduct(product, req.files, index))
     );
     data.orderDate = new Date("2024-12-10T12:32:56.997Z");
+
+    Mail(data)
 
     const billingDetailData = {
       firstName: data.firstName,
