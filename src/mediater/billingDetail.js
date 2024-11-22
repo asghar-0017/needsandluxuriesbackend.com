@@ -62,7 +62,7 @@ const billingDetailMail = async (data) => {
               ${productsInfo}
                <tr>
           <td colspan="3" style="text-align: right; padding-top: 10px; border-top: 1px solid #ddd; color: black;"><strong>Total:</strong></td>
-          <td style="text-align: right; padding-top: 10px; border-top: 1px solid #ddd; color: black;"><strong>Rs ${totalPrice.toFixed(2)}</strong></td>
+          <td style="text-align: right; padding-top: 10px; border-top: 1px solid #ddd; color: black;"><strong>$ ${totalPrice.toFixed(2)}</strong></td>
         </tr>
             </tbody>
           </table>
@@ -107,7 +107,7 @@ const billingDetailMail = async (data) => {
               ${productsInfo}
               <tr>
                 <td colspan="3" style="text-align:right;"><strong>Total:</strong></td>
-                <td><strong>Rs ${totalPrice.toFixed(2)}</strong></td>
+                <td><strong>$ ${totalPrice.toFixed(2)}</strong></td>
               </tr>
             </tbody>
           </table>
